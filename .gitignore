@@ -1,3 +1,5 @@
 .DS_Store
 .env
 reqs/
+# Playwright MCP output (snapshot, console log, screenshot)
+.playwright-mcp/
