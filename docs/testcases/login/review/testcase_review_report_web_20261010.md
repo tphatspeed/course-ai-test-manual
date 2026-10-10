@@ -248,3 +248,33 @@ Hợp lý với rủi ro: 4 `Critical` đúng là 4 luồng sống còn (chặn 
 5. **Viết lại `_044`, `_060`** ngay khi có hộp thư test / tài khoản contact — hai TC 🟡 duy nhất, đều chặn bởi môi trường chứ không phải cách viết
 
 > **Muốn agent sửa luôn (Mode FIX):** `docs/` hiện **chưa được git theo dõi** (`?? docs/`) nên không có mốc git để lấy lại bản trước khi sửa. Cần commit `docs/` trước — agent không tự commit.
+
+---
+
+## Kết quả Mode FIX — 10-10-2026
+
+> Sửa **tại chỗ** trong 4 file part + index. Mốc git trước khi sửa: `d0d0a6d` — xem bản cũ bằng `git show d0d0a6d:docs/testcases/login/web/parts/<file>`. Không TC ID nào bị đổi hay đánh lại.
+
+| Hạng mục | TC | Đã làm |
+|---|---|---|
+| Hệ thống B — độc lập | `_009` · `_010` · `_027` · `_028` · `_044` · `_060` | Pre-Condition tự mô tả trạng thái (cửa sổ ẩn danh mới · đăng nhập bằng `.env` · có / không tích Remember me) |
+| Hệ thống B — tự tạo mốc so sánh | `_020` · `_043` · `_059` | Gửi email không tồn tại trước trong chính TC, ghi mốc, rồi so |
+| Hệ thống A — Mẫu A | `_025`–`_029` · `_032` · `_034` | Steps chính ghi thao tác người dùng + *"(thao tác ở 🔧)"*; tên cookie, cờ, hạn, Application → Cookies gom xuống `🔧` |
+| Hệ thống A — Mẫu B | `_069`–`_071` · `_076` | **Giữ nguyên** — chấp nhận trần 11/12 |
+| Hệ thống D — smoke | `_006` → `_080` | Bỏ bước logo khỏi `_006` (hết `@NeedsVerify` trong TC smoke), chuyển sang TC mới `_080` |
+| Thiết kế | `_030` | Thêm bước lưu + khôi phục cookie phiên (ở `🔧`) — chứng minh **máy chủ** huỷ phiên |
+| Rõ ràng | `_031` | Tách 5 bước thành 10, mỗi bước một hành động |
+| Kết quả đo được | `_011` · `_044` · `_060` | `_011`, `_060` loại trừ trang lỗi; `_044`, `_060` thêm kiểm mật khẩu cũ bị từ chối + bước dọn `.env`. Bước biểu mẫu đặt lại **vẫn** `⚠️` — chỉ viết đích danh được sau khi recon |
+| Ghi chú nhỏ | `_016` · `_038` · `_001` | `_016-b` → `auto..login_1791100003@auto.test` · `_038` ngắt mạng bằng Wi-Fi / cáp · `_001` thêm `🔧` văn bản thay thế của logo (gap #7) |
+| Gap #1, #2 | `_081` · `_082` · `_083` · `_078-d` | Responsive Login cổng (+125%), Quên MK cổng, Quên MK quản trị; Login quản trị thêm biến thể phóng to 125% |
+| Gap #5 | `_084` | Remember me cổng tích / bỏ tích |
+| Gap #6 | `_085` | Đóng popup cảnh báo bộ đếm giờ (×, `Esc`, bấm ra ngoài) → vẫn đăng nhập |
+| Gap #7 | `_086` · `_087` · `_088` | Bàn phím ở 2 trang Quên mật khẩu + chọn Language bằng bàn phím |
+
+**Chưa làm — chờ quyết định:**
+
+- Gap #3 (khoảng trắng ở Email cổng) · gap #8 (mã chống giả mạo hết hạn) — Expected chưa có trong REQ → chốt qua `/update-requirements-from-ticket` rồi mới viết TC
+- Gap #4 (phần trước `@` dài 65 ký tự) — chạy thử trước, ghi ASM, rồi thêm biến thể vào `_019`
+- 4 ô `⏭️` thiếu người quyết ở *Đối soát Field-Level* · người chốt danh sách kích thước (`ASM-13`) và trình duyệt (`ASM-14`) — chờ QA lead
+
+**Sau FIX:** 88 TC · 145 case kiểm · `@NeedsVerify` 19 · `@TechCheck` 25 · TC kế tiếp `CRM_LOGIN_TC_089`. Phép thử 6b chạy lại — không vi phạm.

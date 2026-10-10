@@ -11,7 +11,7 @@
 
 | Module | Prefix TC ID | Nền tảng | Index | Số TC | Số part | Dải TC ID | TC kế tiếp | Độ hạt | Mức rủi ro | Cập nhật |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Đăng nhập | `CRM_LOGIN_TC_` | Web 79 | [login/TEST_CASES_LOGIN_SUMMARY.md](login/TEST_CASES_LOGIN_SUMMARY.md) | 79 | 4 | `001` → `079` | `CRM_LOGIN_TC_080` | GỘP (130 case kiểm) | Cao → Đầy đủ | 04-10-2026 |
+| Đăng nhập | `CRM_LOGIN_TC_` | Web 88 | [login/TEST_CASES_LOGIN_SUMMARY.md](login/TEST_CASES_LOGIN_SUMMARY.md) | 88 | 4 | `001` → `088` | `CRM_LOGIN_TC_089` | GỘP (145 case kiểm) | Cao → Đầy đủ | 10-10-2026 |
 
 **Prefix TC ID đã chiếm:** `CRM_LOGIN_TC_`
 
@@ -21,7 +21,7 @@
 
 | Module | REQ trong requirements | REQ có TC | REQ ngoài phạm vi viết TC | REQ 🔴 thiếu TC | TC `@KnownBug` | TC `@NeedsVerify` | Ghi chú |
 |---|---|---|---|---|---|---|---|
-| `LOGIN` | 72 | 72 | 0 | 0 | 8 | 12 | 6 REQ ⚪ có TC nhưng chờ tài khoản contact (`AMB-SYS-03`) / hộp thư test (`RISK-LOGIN-03`) |
+| `LOGIN` | 72 | 72 | 0 | 0 | 8 | 19 | 6 REQ ⚪ có TC nhưng chờ tài khoản contact (`AMB-SYS-03`) / hộp thư test (`RISK-LOGIN-03`) |
 
 Module requirements còn lại (26 module ở [`../requirements/README.md`](../requirements/README.md)) **chưa** có requirements chi tiết → chưa sinh TC.
 
@@ -72,3 +72,4 @@ docs/testcases/
 | Ngày | Thay đổi | Người/Workflow |
 |---|---|---|
 | 04-10-2026 | Khởi tạo danh mục. Thêm `LOGIN`: 79 TC Web (4 part, GỘP, 130 case kiểm) phủ 72 / 72 REQ. Chiếm prefix `CRM_LOGIN_TC_` | `/generate-testcases-from-requirements` |
+| 10-10-2026 | `LOGIN`: sửa tại chỗ 22 TC, thêm 9 TC (`_080` → `_088`) theo báo cáo review — 88 TC · 145 case kiểm · TC kế tiếp `CRM_LOGIN_TC_089` | `/review-testcases` Mode FIX |
