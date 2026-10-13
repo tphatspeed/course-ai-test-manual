@@ -73,3 +73,4 @@ docs/testcases/
 |---|---|---|
 | 04-10-2026 | Khởi tạo danh mục. Thêm `LOGIN`: 79 TC Web (4 part, GỘP, 130 case kiểm) phủ 72 / 72 REQ. Chiếm prefix `CRM_LOGIN_TC_` | `/generate-testcases-from-requirements` |
 | 10-10-2026 | `LOGIN`: sửa tại chỗ 22 TC, thêm 9 TC (`_080` → `_088`) theo báo cáo review — 88 TC · 145 case kiểm · TC kế tiếp `CRM_LOGIN_TC_089` | `/review-testcases` Mode FIX |
+| 10-10-2026 | `LOGIN`: review vòng 2 — sửa tại chỗ 10 TC (Pre-Condition bước Logout · trang đăng nhập), chốt 4 ô `⏭️` + `ASM-13` / `ASM-14`. Số TC không đổi (88) | `/review-testcases` Mode FIX |
