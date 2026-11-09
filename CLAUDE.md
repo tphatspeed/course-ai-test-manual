@@ -33,14 +33,16 @@ Tôi cho phép Claude đọc file `.env` trong root project để lấy thông t
 
 | Chế độ | Viewport | Lý do |
 |---|---|---|
-| **Headed (debug)** | **`1600×770`** — đúng bằng `--viewport-size` lúc khởi chạy | Cửa sổ **không nở được sau khi launch**. Đặt viewport lớn hơn cửa sổ → trang bị **cắt**, tester không nhìn thấy phần bên phải |
+| **Headed (debug)** | **`1600×750`** — đúng bằng `--viewport-size` lúc khởi chạy | Cửa sổ **không nở được sau khi launch**. Đặt viewport lớn hơn cửa sổ → trang bị **cắt**, tester không nhìn thấy phần bên phải |
 | **Headless (CI)** | `1920×1080` | Không có khung trình duyệt nên đặt bao nhiêu cũng đúng |
 
 > ⚠️ **KHÔNG gọi `browser_resize` để phóng viewport vượt cửa sổ.** `browser_resize` chỉ đổi **viewport**, **không** đổi cửa sổ OS. Ép lên 1920×1080 khi cửa sổ chỉ 1614 → mất **306px bên phải** khỏi tầm nhìn tester (ảnh chụp vẫn đủ, nhưng hỏng mục đích của headed mode). Mặc định **không cần resize** — viewport đã đúng từ lúc launch.
 >
-> 📊 **Số đo thực tế** (Windows, màn hình 1920×1080, Google Chrome): viewport `1600×770` → cửa sổ `1614×905`. Khung chiếm **+135 dọc** (ổn định) và **+14…17 ngang** (dao động theo scrollbar của trang). Muốn cửa sổ vừa màn hình `W×H` → viewport ≈ `(W−17) × (H−135)` — trừ 17 cho chắc.
+> 📊 **Số đo thực tế** (Windows, màn hình 1920×1080, Google Chrome): viewport `1600×750` → cửa sổ `1614×885`. Khung chiếm **+135 dọc** (ổn định) và **+14…17 ngang** (dao động theo scrollbar của trang). Muốn cửa sổ vừa màn hình `W×H` → viewport ≈ `(W−17) × (H−135)` — trừ 17 cho chắc.
 >
 > 📌 **Đổi viewport headed ở đâu:** `--viewport-size` của MCP server `playwright` trong **`.mcp.json` ở gốc project** (cấu hình riêng của project này, đè lên `%APPDATA%\Claude\claude_desktop_config.json`). **Phải khởi động lại Claude Code** mới có hiệu lực.
+>
+> 📱 **Mobile web:** `.mcp.json` có thêm server **`playwright-mobile`** (`--device=Pixel 7 --isolated`) — trình duyệt giả lập điện thoại (UA, cảm ứng, DPR). Dùng cho mode MOBILE-WEB của `/compare-ui-from-figma-design` và mọi việc cần xem trang ở chế độ mobile. **Không** giả lập bằng thu hẹp viewport hay CDP trên server `playwright` chính — lệnh chụp ảnh đặt lại viewport desktop mà không báo lỗi.
 >
 > 📂 **Vì sao dùng `.mcp.json` riêng:** server khai ở đây chạy với cwd = gốc project, nên snapshot / console log / screenshot rơi đúng vào `.playwright-mcp/` của project. Dùng server global thì cwd bám theo project nào khởi động server trước — evidence sẽ lạc sang project khác. File không chứa đường dẫn tuyệt đối nên mang sang máy khác vẫn chạy.
 >
@@ -180,6 +182,7 @@ Agent phải tham chiếu quy tắc chi tiết trong `.claude/rules/`:
 - [Quy tắc Playwright](.claude/rules/playwright_rules.md) — Browser setup, locator semantic, wait strategy
 - [Quy tắc Selenium](.claude/rules/selenium_rules.md) — WebDriverWait, TestNG structure
 - [Quy tắc Appium](.claude/rules/appium_rules.md) — Chọn driver theo loại app · locator Android/iOS · **Flutter (semantics vs flutter-driver)** · WebView · gesture · parallel multi-device
+- [Quy tắc So thiết kế Figma](.claude/rules/design_compare_rules.md) — Figma không mặc nhiên đúng · độ trung thực wireframe/mockup · đơn vị dp/pt/px + mốc đỉnh header · dung sai vị trí/ΔE · phân loại DIFF + ai xử lý
 
 ## 5. Tham Chiếu Skills
 
@@ -200,34 +203,23 @@ Agent sử dụng skills trong `.claude/skills/` tùy theo nhiệm vụ:
 | `skills-automation-code-reviewer` | Review chất lượng automation code theo Definition of Done — hard sleep, POM, Allure metadata, assertion yếu |
 | `skills-jira-integration`       | Tích hợp Jira/Xray — lấy requirements, đẩy test results                             |
 | `skills-bug-reporter`           | Sinh bug report chuẩn từ test FAIL — evidence, severity/priority, đẩy Jira            |
-| `skills-manual-test-executor`   | Thực thi manual TC trên browser thật qua Playwright MCP — chấm PASS/FAIL/BLOCKED/SKIPPED, xuất execution report |
+| `skills-manual-test-executor`   | Thực thi manual TC trên browser thật qua Playwright MCP — chấm PASS/FAIL/BLOCKED/SKIPPED, quay video từng TC (`video/` ngang cấp `evidence/`), xuất execution report |
 | `skills-test-report-analyzer`   | Phân tích test report **một lần chạy** — automation lẫn manual, gom nhóm failure theo root cause, đề xuất thứ tự xử lý |
 | `skills-test-progress-reporter` | Báo cáo tiến độ **một kỳ trong đợt** (ngày/tuần) — so thực tế với lịch plan, chỉ số trong kỳ, trở ngại, rủi ro mới, đề xuất điều chỉnh — ISTQB CTFL v4.0 mục 5.3.2 |
 | `skills-test-summary-reporter`  | Tổng hợp **toàn dự án tại một mốc** — gộp nhiều execution report + bug + RTM, đối chiếu tiêu chí exit, khuyến nghị go/no-go |
+| `skills-quality-insights`        | Phân tích chất lượng **cắt ngang** module × nền tảng × thời gian từ dữ liệu `docs/` — xu hướng lỗi + gom nhóm nguyên nhân gốc · chấm rủi ro release 5 yếu tố · chọn + xếp hạng test cho một thay đổi trong quỹ thời gian. Điểm minh bạch, mọi số truy về mã — công cụ `scripts/quality-insights/qi.py` |
 | `skills-testcase-reviewer`      | Review chất lượng manual test cases — rubric 6 tiêu chí, coverage gaps · Mode AUTOMATION chấm TC nào làm automation được theo bảng tiêu chí |
 | `skills-coverage-traceability`  | Sinh ma trận truy vết RTM — Requirements ↔ Test Cases ↔ Automation                    |
 | `skills-api-mocking`            | Sinh mock/stub API (Playwright route, WireMock) — test UI độc lập backend             |
-| `skills-user-guide-writer`      | Sinh Hướng dẫn sử dụng cho người dùng cuối — viết theo việc cần làm, bám cấu trúc ISO/IEC/IEEE 26514 · 82079-1 |
+| `skills-user-guide-writer`      | Sinh Hướng dẫn sử dụng cho người dùng cuối — viết theo việc cần làm, bám cấu trúc ISO/IEC/IEEE 26514 · 82079-1. 3 mode DOC · LIVE · **VIDEO**, ngôn ngữ `lang` (vi/en…), mọi ảnh/video **có highlight** (khung đỏ + số thứ tự click), luôn xuất HTML nhúng ảnh + video — công cụ `scripts/user-guide/` |
+| `skills-figma-design-comparator` | So bản thiết kế **Figma** với UI đã xây — web, **mobile web** (Playwright MCP — server `playwright-mobile` giả lập thiết bị) và app mobile (Appium MCP). Trích spec Figma chỉ-đọc (**cache** theo dấu vân tay khung), đo lệch chữ · vị trí · khoảng cách · màu theo dp/pt/px, đi **lưới soát ngoài → trong**, ghi `DIFF` có loại · mức độ · ai xử lý kèm **ảnh khoanh đúng (Figma) / sai (App)** có ghi chú, không log trùng giữa các nền tảng chung khung Figma — công cụ `scripts/design-compare/` |
 
-## 6. Kế Hoạch Kiểm Thử (Plan Templates)
+## 6. Phiếu Đầu Vào (`plans/`)
 
-Các bộ prompt template sẵn dùng trong `plans/`:
+`plans/` chỉ chứa phiếu người dùng **tự điền** — thứ agent không suy ra được. Quy trình nhiều bước (AI-RBT 6 bước, automation, cross-module) nằm trọn trong command, gọi bằng `/tên`.
 
-- **`plans/manual/`** — Quy trình sinh Manual Test Cases (2 modes: QUICK + FULL RBT)
-
-  - Xem `plans/manual/QUICK_START.md` để bắt đầu nhanh
-  - Workflow QUICK: `/generate-testcases-from-requirements`
-  - Workflow FULL RBT: `/generate-testcases-manual-rbt`
-- **`plans/automation/`** — Quy trình 6 bước sinh Automation Scripts
-
-  - Xem `plans/automation/QUICK_START.md` để bắt đầu nhanh
-  - One-click: Copy `plans/automation/prompt_automation.txt`
-  - Workflow: `/generate-automation-from-testcases`
-- **`plans/cross-module/`** — Quy trình phân tích Cross-Module & Ma trận kết hợp
-
-  - Xem `plans/cross-module/QUICK_START.md` để bắt đầu nhanh
-  - Workflow phân tích: `/generate-cross-module-test-plan`
-  - Workflow sinh data: `/generate-combinatorial-test-data`
+- **`plans/master-test-plan/`** — phiếu `test_plan.config.yaml` cho `/generate-master-test-plan` (+ khung rỗng `test_plan.template.yaml`)
+- **`plans/design-compare/report_template.md`** — *tuỳ chọn*: mẫu báo cáo riêng của team cho `/compare-ui-from-figma-design`, tự tạo khi cần
 
 ## 6b. Cấu Trúc Thư Mục `docs/` (BẮT BUỘC)
 
@@ -288,31 +280,47 @@ docs/
 │   └── <module>/<nền-tảng>/                    ← mỗi lần chạy thuộc ĐÚNG MỘT nền tảng
 │       ├── run_<timestamp>/
 │       │   ├── execution_report.md             ← ô `Loại nguồn`: Bộ TC / Checklist <loại> — mục checklist mang mã CL-<…>-<nn>
-│       │   └── evidence/<TC_ID>_<mô_tả>.png
+│       │   ├── execution_report.html           ← chỉ khi user yêu cầu — md2html.py --standalone, nhúng ảnh + video
+│       │   ├── evidence/<TC_ID>_<mô_tả>.png
+│       │   └── video/<TC_ID>.webm               ← NGANG CẤP evidence/ — mặc định mỗi TC đã chạy 1 video; input `Quay video`: Có · Chỉ giữ FAIL · Không
 │       ├── retest_<timestamp>/                 ← /retest-fixed-bugs
 │       │   ├── retest_report.md
-│       │   └── evidence/*.png
+│       │   ├── evidence/*.png
+│       │   └── video/<BUG_ID>_lan<n>.webm · <TC_ID>.webm ← mỗi lần lặp + mỗi TC regression
 │       └── analysis_<timestamp>.md             ← /analyze-test-report nhánh MANUAL
 │
 ├── traceability/                               ← /generate-traceability-matrix — ghi đè tại chỗ, bản cũ tra git
-│   ├── traceability_matrix.md                  ← RTM toàn hệ thống — TÊN FILE BẤT BIẾN, workflow phía sau đọc file này trước
-│   └── <module>/traceability_matrix_<module>.md ← RTM một module — KHÔNG đè file toàn hệ thống
+│   ├── traceability_matrix.md                  ← FILE CHUNG — TÊN FILE BẤT BIẾN: độ phủ theo module, ⬛ ngoài tầm nhìn, việc cần làm, Bản đồ tài liệu. Workflow phía sau đọc file này trước
+│   └── <module>/traceability_matrix_<module>.md ← chi tiết từng module — ma trận theo Story. Sinh 1 module chỉ thay dòng của module đó trong file chung
 │
 ├── bugs/                                       ← bug sinh từ TC FAIL
 │   ├── README.md                               ← DANH MỤC bug — có cột Nền tảng
 │   └── <module>/<nền-tảng>/BUG_<module>_<timestamp>_<TC_ID>.md  ← mỗi bug 1 file, hậu tố TC_ID để nhìn tên biết ngay thuộc TC nào
 │
+├── quality-insights/                            ← phân tích CẮT NGANG module × nền tảng — ảnh chụp tại một ngày, KHÔNG sửa tại chỗ
+│   ├── defect_trends_<YYYYMMDD>.md              ← /analyze-defect-trends — nhóm nguyên nhân gốc · vấn đề lặp lại · điểm nóng · TC fail chưa có bug
+│   ├── release_risk_<mốc>_<YYYYMMDD>.md         ← /assess-release-risk — cùng slug <mốc> với test plan · đầu vào cho báo cáo tổng hợp
+│   └── test_selection_<TICKET-ID|mốc>_<YYYYMMDD>.md ← /select-regression-tests — thứ tự chạy · ⏭️ cố ý bỏ · phạm vi dán thẳng cho /execute-test-cases
+│
+├── design-reviews/                              ← /compare-ui-from-figma-design — so thiết kế Figma với UI thật
+│   ├── README.md                                ← DANH MỤC — module × nền tảng × biến thể, DIFF đã dùng · mã kế tiếp (`DIFF-<MODULE>-<nn>`, đếm theo module) · **Sổ khung Figma** (tra trước khi cấp mã)
+│   └── <module>/<nền-tảng>/run_<timestamp>/
+│       ├── design_compare_report.md             ← Bản đồ màn hình · danh sách DIFF (loại · mức độ · ai xử lý) · bảng đo từng khung
+│       └── evidence/<mã-khung>_<mô_tả>_{figma|app|side|marked}.png ← ảnh Figma · ảnh app · đặt cạnh nhau · khoanh DIFF
+│
 └── user-guides/                                 ← Hướng dẫn sử dụng cho NGƯỜI DÙNG CUỐI
     ├── README.md                                ← DANH MỤC — module × role × phiên bản phần mềm
     └── <module>/
         ├── user_guide_<module>.md               ← INDEX — TÊN FILE BẤT BIẾN
-        ├── images/*.png                          ← ảnh minh hoạ, đặt tên theo việc
+        ├── user_guide_<module>.html             ← LUÔN xuất sau bản .md — ảnh + video nhúng sẵn (scripts/user-guide/md2html.py --standalone)
+        ├── images/*.png                          ← ảnh có highlight (khung đỏ + số thứ tự click), tên ASCII theo phần–việc–bước
+        ├── video/*.mp4                           ← Mode VIDEO: mỗi phần 1 video + full_walkthrough.mp4
         └── parts/part_NN_<slug>.md               ← chỉ khi > 15 việc
 ```
 
 > `test_plan_<mốc>.md` nằm ở **`docs/test-plans/`** — plan là tài liệu **lập và duyệt trước đợt**, không phải kết quả thực thi. `test_progress_<mốc>_*.md` · `test_summary_<mốc>_*.md` nằm ở **gốc `executions/`**. Cả ba không thuộc module nào — chúng cắt ngang mọi module tại một mốc release. **Cùng slug `<mốc>`** (chữ thường, không dấu, VD `release_2.0`) là mối nối: báo cáo tiến độ theo dõi lịch của plan, báo cáo tổng hợp chấm lại đúng bộ tiêu chí exit đã công bố.
 >
-> **Tầng nền tảng `<nền-tảng>/`** — chỉ nhận đúng 3 tên `web` · `mobile` · `api` (Android và iOS chung `mobile/`, phân biệt bằng tiền tố ảnh `android_`/`ios_` và cột/tag nền tảng). Áp cho 5 nhánh `requirements/` · `testcases/` · `checklists/` · `executions/` · `bugs/`, **luôn có** kể cả module mới chỉ có một nền tảng — thêm nền tảng thứ hai về sau không phải di chuyển file nào. File index `REQUIREMENTS_<TÊN_MODULE>_SUMMARY.md` / `TEST_CASES_<TÊN_MODULE>_SUMMARY.md` **giữ nguyên tên và vị trí**; workflow phía sau đọc index trước, rồi theo `## Bản đồ tài liệu` sang file nền tảng. Tài liệu cũ chưa có tầng này: **không** di chuyển lịch sử (`run_*`, `BUG_*` giữ nguyên chỗ) — workflow đọc quét cả `<module>/<nền-tảng>/` lẫn `<module>/`; requirements/testcases cũ chuyển sang tầng nền tảng **một lần**, ở lần đầu một workflow sinh/cập nhật chạm lại module đó (ID giữ nguyên, ghi Nhật ký).
+> **Tầng nền tảng `<nền-tảng>/`** — chỉ nhận đúng 3 tên `web` · `mobile` · `api` (Android và iOS chung `mobile/`, phân biệt bằng tiền tố ảnh `android_`/`ios_` và cột/tag nền tảng). Áp cho 6 nhánh `requirements/` · `testcases/` · `checklists/` · `executions/` · `bugs/` · `design-reviews/`, **luôn có** kể cả module mới chỉ có một nền tảng — thêm nền tảng thứ hai về sau không phải di chuyển file nào. File index `REQUIREMENTS_<TÊN_MODULE>_SUMMARY.md` / `TEST_CASES_<TÊN_MODULE>_SUMMARY.md` **giữ nguyên tên và vị trí**; workflow phía sau đọc index trước, rồi theo `## Bản đồ tài liệu` sang file nền tảng. Tài liệu cũ chưa có tầng này: **không** di chuyển lịch sử (`run_*`, `BUG_*` giữ nguyên chỗ) — workflow đọc quét cả `<module>/<nền-tảng>/` lẫn `<module>/`; requirements/testcases cũ chuyển sang tầng nền tảng **một lần**, ở lần đầu một workflow sinh/cập nhật chạm lại module đó (ID giữ nguyên, ghi Nhật ký).
 >
 > `docs/user-guides/` là nhánh **duy nhất** viết cho người ngoài đọc — khách hàng, người dùng cuối. Nó **dùng lại** kết quả recon của `requirements/` nhưng **không** chép nội dung sang: requirements nói *hệ thống phải làm gì*, hướng dẫn nói *người dùng làm thế nào*. 🔒 Ảnh trong nhánh này phải dùng **dữ liệu mẫu** — tài liệu được phát ra ngoài.
 >
@@ -320,12 +328,17 @@ docs/
 
 ### Xem kết quả bằng web viewer
 
-Ba trang tĩnh trong `scripts/`, mở bằng cách double-click, chạy offline, không cần cài gì:
+Các trang tĩnh trong `scripts/`, mở bằng cách double-click, chạy offline, không cần cài gì:
 
 | Trang | Nạp file gì | Dùng khi |
 |---|---|---|
 | `scripts/testcases-viewer/bundle.html` | `test_cases_*.md` | Duyệt, lọc, xuất Excel test case |
-| `scripts/execution-viewer/bundle.html` | `execution_report.md` · `retest_report.md` · `docs/traceability/traceability_matrix.md` | Xem kết quả chạy (bộ TC lẫn checklist — nhãn `CHECKLIST` riêng), so sánh giữa các lần chạy, xem độ phủ automation, xuất CSV/Excel |
+| `scripts/execution-viewer/bundle.html` | `execution_report.md` · `retest_report.md` | Xem kết quả chạy (bộ TC lẫn checklist — nhãn `CHECKLIST` riêng), so sánh giữa các lần chạy, xuất CSV/Excel |
+| `scripts/traceability-viewer/bundle.html` | cả thư mục `docs/traceability/` (file chung + file từng module) | Xem độ phủ REQ theo module · Story, lọc 🔴 🟠 🟡 🟣 ✅ ⏭️, TC chưa automate, gap, việc cần làm, xuất CSV/Excel |
+| `scripts/user-guide/md2html.py` (chạy bằng Python) | `user_guide_<module>.md` · `execution_report.md` · `retest_report.md` · **mọi `.md`** | Xuất Markdown thành HTML 1 file nhúng ảnh + video (`--standalone --lang <vi\|en> [--release]`) — **user bảo "xuất MD sang HTML" là luôn dùng script này với `--standalone`**, không tự viết HTML, không để ảnh/video dạng link rời — cùng thư mục có công cụ quay video/highlight, xem `scripts/user-guide/README.md` |
+| `scripts/design-compare/dc.py` (chạy bằng Python) | spec JSON của Figma (`figma_extract.js`) + của UI thật (`collect_dom.js` / page source mobile) | Đo lệch thiết kế ↔ UI (`match`), dựng ảnh Figma \| App đặt cạnh nhau (`visual`), dựng ảnh Figma từ JSON khi hết hạn mức MCP (`render`), khoanh DIFF (`annotate`), che dữ liệu cá nhân (`mask` · `match --redact`), ghép mục báo cáo (`sections`), ΔE màu — xem `scripts/design-compare/README.md` |
+| `scripts/design-review-viewer/bundle.html` | cả thư mục `docs/design-reviews/` (danh mục + `design_compare_report.md` + `evidence/`) | Lọc DIFF theo module · nền tảng · trạng thái · mức độ · ai xử lý, xem ảnh Figma \| App và ảnh khoanh, cảnh báo High / Cần PO quyết / khung ❔, xuất CSV/Excel |
+| `scripts/quality-insights/qi.py` (chạy bằng Python) | cả `docs/` — `bugs/` · `executions/` · `testcases/` · `requirements/**/impact/` | Tính số liệu cho 3 workflow Quality Insights: `trends` (xu hướng lỗi, xu hướng từng TC qua các lần chạy) · `risk` (điểm rủi ro module × nền tảng) · `select` (chọn + xếp hạng TC theo thay đổi và quỹ phút) · `collect` (dữ liệu thô để soát). Thang điểm: `skills-quality-insights/references/scoring.md` |
 | `scripts/bugs-viewer/bundle.html` | `docs/bugs/README.md` (danh mục) · `docs/bugs/<module>/<nền-tảng>/BUG_*.md` | Lọc bug theo Severity/Priority/Trạng thái, xem Lịch sử retest, xuất CSV/Excel |
 
 ### Quy tắc bất biến
@@ -342,13 +355,14 @@ Ba trang tĩnh trong `scripts/`, mở bằng cách double-click, chạy offline,
 | **KHÔNG xoá dòng REQ** — tính năng gỡ thì đổi trạng thái 🔴 Deprecated | Xoá dòng là mất dấu vết |
 | **KHÔNG đổi / đánh lại TC ID** khi cập nhật TC theo ticket — sửa tại chỗ, ghi **mốc git** (hash commit trước khi sửa) vào Nhật ký, TC bị gỡ gắn tag `@Deprecated` ở cột `Tags` + tiền tố `🗑️ Deprecated (<TICKET-ID>, <ngày>) —` ở `Test Scenario` (bảng TC không có cột trạng thái) — `/execute-test-cases`, RTM, Bảng Đối Soát Coverage lọc theo tag này | TC ID là khoá nối sang `allure.label('testId', ...)` trong script, cột TC ID của RTM và execution report cũ. Đổi là cắt cả ba mối nối, không có cách phát hiện tự động |
 | Mọi thay đổi requirements phải ghi **Nhật ký thay đổi** ở cuối tài liệu module | Bộ nhớ liền mạch giữa các phiên, và là nơi báo TC nào đã stale |
-| Evidence nằm **cùng** tài liệu sinh ra nó (recon → `<module>/<nền-tảng>/evidence/`, execution → `<module>/<nền-tảng>/run_*/evidence/`) | Di chuyển/xoá không lạc file; link tương đối không gãy |
+| Evidence nằm **cùng** tài liệu sinh ra nó (recon → `<module>/<nền-tảng>/evidence/`, execution → `<module>/<nền-tảng>/run_*/evidence/`, video thực thi → `run_*/video/` ngang cấp `evidence/`) | Di chuyển/xoá không lạc file; link tương đối không gãy |
 | 🔒 **KHÔNG ghi giá trị bí mật thật vào `docs/`** — mật khẩu, token, cookie xác thực, session id, API key. Ghi **hình thái** (`<16 ký tự hex>`) thay cho giá trị | `docs/` được commit và **lịch sử git không xoá được bằng cách sửa file**. Credentials sống ở `.env` (đã `.gitignore`); tài liệu chỉ mô tả *hình dạng* |
 | 📸 **Evidence chụp đúng phạm vi đối tượng cần chứng minh, không chụp thừa** — đối tượng nằm trọn trong viewport thì chụp viewport, đừng full-page kéo theo cả trang dữ liệu nghiệp vụ | Ảnh full-page của màn hình nghiệp vụ kéo theo tên khách hàng, số tiền, nhật ký hoạt động — không liên quan gì tới REQ mà vẫn bị commit |
 | 🔍 **Chụp xong phải mở lại ảnh xác nhận đúng trạng thái** trước khi ghi vào Danh mục Evidence | Thao tác mở dropdown/tab có thể thất bại âm thầm. Dòng danh mục sai **nguy hiểm hơn không có ảnh** — nó tạo cảm giác REQ đã có bằng chứng |
 | Bug report sống ở **`docs/bugs/<module>/<nền-tảng>/`**, KHÔNG ở gốc repo | Bug là mắt xích thứ tư của chuỗi truy vết; để ngoài `docs/` thì lệnh dọn dự án bỏ sót, để lại bug mồ côi trỏ vào TC/REQ đã đổi nghĩa |
 | Bug **phải trỏ về TC ID và REQ ID đang có hiệu lực**; evidence chỉ **link** tới `executions/`, không nhân bản | Bug trỏ vào mã đã đổi nghĩa còn tệ hơn không trỏ — người đọc tin nhầm. Nhân bản ảnh là tạo hai nguồn sự thật |
 | Mục checklist khi đi ra khỏi file checklist mang **mã mục `CL-<phần tên file sau checklist_>-<nn>`**, không dùng `#3` trần · kết quả checklist **không** cộng vào số của bộ TC (RTM xếp REQ chỉ có checklist là 🟠, báo cáo tổng hợp tách bảng riêng) | `#3` trùng giữa mọi checklist — viewer, RTM, bug, báo cáo nối nhầm mà không ai biết. 12 mục smoke cộng vào 36 TC là pass rate vô nghĩa |
+| Chỗ lệch thiết kế mang mã **`DIFF-<MODULE>-<nn>`** đánh số nối tiếp theo module (dùng chung mọi nền tảng) · chạy lại thì **giữ mã** cho lệch cũ, chỉ đổi trạng thái 🔴 Mở / ✅ Đã khắc phục / ⚪ Chấp nhận · không xoá dòng · cùng khung Figma đã có DIFF ở nền tảng khác (mobile web ↔ app) → chung mã nguồn thì **dùng lại mã**, khác mã nguồn thì mã mới + cột *Liên quan* | Bug, báo cáo cũ trỏ vào mã DIFF — cấp mã mới cho lệch cũ là đếm trùng, đánh lại số là cắt mối nối; log lại lệch của nền tảng kia mà không liên kết là dev nhận hai bug cho một chỗ sửa. Chi tiết: `design_compare_rules.md` mục 6 |
 | Thêm module = thêm thư mục + 1 dòng ở `README.md` danh mục | Không đụng gì khác trong repo |
 | 📅 **Ngày trong nội dung tài liệu viết `DD-MM-YYYY`** (VD `17-09-2026`) hoặc `DD/MM/YYYY`; có giờ thì `17-09-2026 14:10`. Áp cho mọi file trong `docs/`, mẫu trong `.claude/`, `plans/`, `prompts/` và phiếu nhập. **Tên file giữ dạng cũ**: `run_<timestamp>`, `test_progress_<mốc>_<YYYYMMDD>.md`, `openapi_<YYYY-MM-DD>.json` · mã có ngày như `PO-2026-08-18` giữ nguyên · dữ liệu nhập vào hệ thống (payload API, giá trị field) viết đúng **định dạng hệ thống yêu cầu**, không đổi theo quy tắc này | Người đọc tài liệu là QA/PM/khách Việt Nam. Tên file cần năm đứng đầu để xếp đúng thứ tự thời gian. Đọc tài liệu cũ (trước 17-09-2026) vẫn gặp `YYYY-MM-DD` → **nhận cả hai**, năm đứng đầu không thể nhầm; **không** bao giờ hiểu `05-10-2026` theo kiểu Mỹ |
 | `_discovery/` **không được** chứa mã `REQ-XXX-NN` — chỉ cấp **prefix** | Tầng khám phá chưa mở form, chưa trigger validation; cấp số REQ ở đó là chắc chắn phải đánh lại |
@@ -444,7 +458,7 @@ rm -rf docs .playwright-mcp task.md .claude/settings.local.json
 
 ⚠️ **`.claude/settings.local.json`** là permission tích luỹ theo từng máy/phiên, thường chứa đường dẫn tuyệt đối của dự án cũ. Đã đưa vào `.gitignore` — nếu file còn bị git theo dõi từ trước, gỡ bằng: `git rm --cached .claude/settings.local.json`
 
-⚠️ **Trước khi xoá, kiểm tra ảnh trong `docs/executions/*/run_*/evidence/` và `docs/user-guides/*/images/`** — screenshot chụp hệ thống thật, thường chứa dữ liệu khách hàng (tên, email, số tiền). Quan trọng hơn nữa: **đừng commit chúng lên repo công khai**.
+⚠️ **Trước khi xoá, kiểm tra ảnh + video trong `docs/executions/*/run_*/evidence/` · `video/`, `docs/design-reviews/*/run_*/evidence/` và `docs/user-guides/*/images/`** — screenshot chụp hệ thống thật, thường chứa dữ liệu khách hàng (tên, email, số tiền). Quan trọng hơn nữa: **đừng commit chúng lên repo công khai**.
 
 Không cần dọn gì thêm. Agent tự tạo lại `docs/` và 2 file danh mục (`docs/requirements/README.md`, `docs/testcases/README.md`) ở lần chạy workflow đầu tiên — xem skill `skills-requirements-analyzer` mục 5.7.1.
 
@@ -536,15 +550,19 @@ Agent sử dụng workflows trong `.claude/commands/` qua slash commands:
 | `/review-automation-code`               | Review chất lượng automation code theo Definition of Done (2 modes: REVIEW/FIX) |
 | `/analyze-flaky-tests`                  | Phân tích và khắc phục flaky tests                     |
 | `/fetch-jira-requirements`              | Lấy requirements/user stories từ Jira                     |
-| `/import-test-results-xray`             | Đẩy kết quả test lên Xray                              |
+| `/import-test-results-xray`             | Đẩy kết quả test lên Xray — **chỉ chạy khi user gõ `/import-test-results-xray`**, agent không tự gọi (`disable-model-invocation`) |
 | `/create-bug-report`                    | Sinh bug report chuẩn từ test FAIL (tùy chọn đẩy Jira)  |
-| `/execute-test-cases`                   | Thực thi manual TC **hoặc checklist** trên browser thật — chấm PASS/FAIL/BLOCKED/SKIPPED, xuất execution report (ô `Loại nguồn` phân biệt bộ TC / checklist) |
-| `/retest-fixed-bugs`                    | **Đóng vòng lặp bug** — retest bug đã fix trên build mới, chấm FIXED/NOT_FIXED/PARTIAL, chạy regression quanh vùng fix (2 modes: RETEST/FULL) |
+| `/execute-test-cases`                   | Thực thi manual TC **hoặc checklist** trên browser thật — chấm PASS/FAIL/BLOCKED/SKIPPED, quay video từng TC vào `video/` ngang cấp `evidence/` (mặc định bật, tắt bằng input `Quay video`), xuất execution report (ô `Loại nguồn` phân biệt bộ TC / checklist) · xuất HTML nhúng ảnh + video khi được yêu cầu |
+| `/retest-fixed-bugs`                    | **Đóng vòng lặp bug** — retest bug đã fix trên build mới, chấm FIXED/NOT_FIXED/PARTIAL, chạy regression quanh vùng fix, quay video mỗi lần lặp + mỗi TC regression vào `video/` — tắt được (2 modes: RETEST/FULL) |
 | `/analyze-test-report`                  | Phân tích test report **một lần chạy** — 2 nhánh AUTOMATION / MANUAL, gom nhóm failure, đề xuất xử lý |
 | `/generate-master-test-plan`            | Master Test Plan cấp quản lý — đầu vào phiếu YAML `plans/master-test-plan/test_plan.config.yaml`. Phạm vi **module × nền tảng**, cấp độ · loại · độc lập kiểm thử, chiến lược tự động hoá · phi chức năng, tiêu chí vào/ra, môi trường · dữ liệu kiểm thử, quản lý lỗi, lịch · ước lượng · ngân sách, rủi ro dự án + sản phẩm. Xuất `docs/test-plans/test_plan_<mốc>.md`, bám 29119-3, phủ đủ ISTQB CTFL v4.0 mục 5.1.1 |
 | `/generate-test-progress-report`        | Báo cáo tiến độ **một kỳ** trong đợt — so thực tế với lịch plan, chỉ số trong kỳ, trở ngại, rủi ro mới, kế hoạch kỳ tới, đề xuất điều chỉnh. **Không** khuyến nghị go/no-go |
 | `/generate-test-summary-report`         | Báo cáo tổng hợp tại một mốc release/sprint — gộp mọi kết quả, đối chiếu tiêu chí exit, **khuyến nghị go/no-go** |
+| `/analyze-defect-trends`                | Xu hướng lỗi & vấn đề lặp lại **toàn dự án** — gom nhóm nguyên nhân gốc trên kho bug + lịch sử chạy, điểm nóng module × nền tảng, TC fail chưa có bug, bug mở mà TC đã PASS. KHÔNG sửa bug/TC |
+| `/assess-release-risk`                  | Chấm rủi ro release theo **module × nền tảng** — 5 yếu tố (thay đổi · lỗi mở · bất ổn · khoảng trống thực thi · tầm ảnh hưởng), đối chiếu plan + `RISK-*`, đề xuất kiểm soát. Đầu vào cho báo cáo tổng hợp — **không** go/no-go |
+| `/select-regression-tests`              | Chọn + xếp hạng TC cho một thay đổi trong quỹ thời gian — nhóm Bắt buộc · Smoke · Theo điểm, mở rộng theo module phụ thuộc, liệt kê đủ ⏭️ cố ý bỏ. Danh sách dán thẳng cho `/execute-test-cases` |
 | `/review-testcases`                     | Review chất lượng manual TCs (3 modes: REVIEW/FIX/AUTOMATION — AUTOMATION chấm độc lập TC nào làm automation được theo `skills-rbt-manual-testing/references/automation_criteria.md`) |
-| `/generate-traceability-matrix`         | Sinh ma trận truy vết RTM 3 tầng (+ checklist làm nguồn phụ) → `docs/traceability/traceability_matrix.md` |
+| `/generate-traceability-matrix`         | Sinh ma trận truy vết RTM 3 tầng (+ checklist, kết quả chạy, bug làm nguồn phụ) — file chung `docs/traceability/traceability_matrix.md` + file chi tiết từng module. Nhận danh sách module (`login, customers`) |
 | `/generate-api-mocks`                   | Sinh API mocks + tests cho edge cases                        |
-| `/generate-user-guide`                  | Sinh **Hướng dẫn sử dụng** cho người dùng cuối từ requirements + evidence đã khảo sát (2 modes: DOC/LIVE). KHÔNG phải tài liệu requirements viết lại giọng khác |
+| `/generate-user-guide`                  | Sinh **Hướng dẫn sử dụng** cho người dùng cuối từ requirements + evidence đã khảo sát (3 modes: DOC/LIVE/VIDEO · `lang` vi/en) — ảnh/video có highlight, luôn xuất HTML 1 file nhúng media. KHÔNG phải tài liệu requirements viết lại giọng khác |
+| `/compare-ui-from-figma-design`         | So bản thiết kế **Figma** với UI thật — 3 mode **WEB** (Playwright MCP) / **MOBILE-WEB** (trình duyệt điện thoại — server `playwright-mobile`) / **MOBILE** (Appium MCP — Android/iOS/Hybrid). Chỉ đọc Figma (có cache), đo lệch chữ · vị trí · khoảng cách · màu · trạng thái, đi lưới soát ngoài → trong, ghi `DIFF` (Dev / Design / Cần PO quyết) kèm ảnh khoanh đúng / sai vào `docs/design-reviews/` — tra *Sổ khung Figma* để không log trùng giữa nền tảng. Mẫu báo cáo riêng của team: `plans/design-compare/report_template.md`. KHÔNG sửa Figma, KHÔNG tự tạo bug |

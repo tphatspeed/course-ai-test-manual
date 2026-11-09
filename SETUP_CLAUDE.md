@@ -11,7 +11,7 @@
 
 - [0. Chuẩn Bị Trước Khi Cài](#0-chuẩn-bị-trước-khi-cài)
 - [1. Add Playwright MCP Thủ Công (Developers → Local MCP Server)](#1-add-playwright-mcp-thủ-công-developers--local-mcp-server)
-- [2. Cài Connectors: Atlassian, Slack, GitHub, Claude in Chrome](#2-cài-connectors-atlassian-slack-github-claude-in-chrome)
+- [2. Cài Connectors: Atlassian, Slack, GitHub, Claude in Chrome, Figma](#2-cài-connectors-atlassian-slack-github-claude-in-chrome-figma)
 - [3. Cowork — Setup Schedule Cho Task Cụ Thể](#3-cowork--setup-schedule-cho-task-cụ-thể)
 - [4. Checklist Nghiệm Thu & Xử Lý Lỗi Thường Gặp](#4-checklist-nghiệm-thu--xử-lý-lỗi-thường-gặp)
 
@@ -105,7 +105,7 @@ Mở nhanh trên Windows (dán vào Run — `Win + R`):
 
 | Chế độ | Viewport | Ghi chú |
 |---|---|---|
-| **Headed (debug)** | **`1600×770`** | Vừa màn hình 1920×1080. Đây là giá trị mặc định của bộ kit |
+| **Headed (debug)** | **`1600×750`** | Vừa màn hình 1920×1080. Đây là giá trị mặc định của bộ kit |
 | **Headless (CI)** | `1920×1080` | Không có khung trình duyệt nên đặt bao nhiêu cũng đúng |
 
 Cấu hình `.mcp.json` mà bộ kit đang dùng (đặt ở **gốc project**):
@@ -118,7 +118,7 @@ Cấu hình `.mcp.json` mà bộ kit đang dùng (đặt ở **gốc project**):
       "args": [
         "-y",
         "@playwright/mcp",
-        "--viewport-size=1600,770",
+        "--viewport-size=1600,750",
         "--config",
         ".claude/playwright-mcp-config.json"
       ]
@@ -131,28 +131,32 @@ Kèm file `.claude/playwright-mcp-config.json`:
 
 ```json
 {
+  "capabilities": ["devtools"],
   "browser": {
     "launchOptions": {
       "args": [
         "--test-type",
         "--window-position=0,0"
       ]
-    }
+    },
+    "initPage": ["playwright-mcp-init.cjs"]
   }
 }
 ```
 
 | Tham số | Tác dụng |
 |---|---|
+| `"capabilities": ["devtools"]` | Mở thêm nhóm tool `browser_start_video` · `browser_stop_video` · `browser_video_chapter` (cùng tracing) — `/execute-test-cases` và `/retest-fixed-bugs` dùng để **quay video từng TC** vào `video/` ngang cấp `evidence/`. Video mặc định bật, tắt cho từng lần chạy bằng input `Quay video: Không` (hoặc `Chỉ giữ FAIL`) — dòng config này cứ để nguyên, tool chỉ chạy khi được gọi. Thiếu dòng này mà vẫn muốn quay thì hai workflow đó dừng và báo khởi động lại. Đổi xong phải **khởi động lại Claude Code** |
 | `--test-type` | Tắt thanh cảnh báo "Chrome đang bị điều khiển bởi phần mềm tự động" — đỡ chiếm chiều cao |
 | `--window-position=0,0` | Ghim cửa sổ về góc trên trái, khỏi bị lệch ra ngoài màn |
+| `initPage` → `.claude/playwright-mcp-init.cjs` | Tắt popup **Save password? · Change your password · Save address? · Save card?** của Chrome — Chrome không có cờ dòng lệnh cho các popup này nên script mở `chrome://settings` một lần lúc khởi động, đặt preference (`credentials_enable_service`, `profile.password_manager_leak_detection`, `autofill.profile_enabled`, `autofill.credit_card_enabled` = `false`). Đường dẫn tính theo thư mục file config |
 
 > 📂 **Không có `--output-dir`, và đó là cố ý.** Server khai trong `.mcp.json` chạy với cwd = gốc project, nên snapshot / console log / screenshot tự rơi vào `.playwright-mcp/` của **đúng project này**. Dùng server global thì cwd bám theo project nào khởi động server trước — evidence sẽ lạc sang project khác. File cũng không chứa đường dẫn tuyệt đối nên mang sang máy khác vẫn chạy.
 
-> 🖥️ **Màn hình không phải Full HD?** Tính lại theo công thức đo thực tế (Windows, Google Chrome): viewport `1600×770` → cửa sổ `1614×905`. Khung chiếm **+135 dọc** (ổn định) và **+14…17 ngang** (dao động theo scrollbar của trang).
+> 🖥️ **Màn hình không phải Full HD?** Tính lại theo công thức đo thực tế (Windows, Google Chrome): viewport `1600×750` → cửa sổ `1614×885`. Khung chiếm **+135 dọc** (ổn định) và **+14…17 ngang** (dao động theo scrollbar của trang).
 >
 > Muốn cửa sổ vừa màn hình `W×H` → `--viewport-size=(W−17),(H−135)`.
-> - Màn 1920×1080 → `1600,770` (mặc định, đã trừ dư cho thoáng)
+> - Màn 1920×1080 → `1600,750` (mặc định, đã trừ dư cho thoáng)
 > - Màn 1366×768 → `1349,633`
 >
 > Sửa xong **phải khởi động lại Claude Code** mới có hiệu lực.
@@ -160,8 +164,8 @@ Kèm file `.claude/playwright-mcp-config.json`:
 > 🚫 **Màn hình 1920×1080 KHÔNG thể cho viewport headed 1920×1080** — thanh tab + thanh địa chỉ ăn mất chiều cao. Cần đúng `1920×1080` thì chạy **headless**.
 
 > 💡 **Hai kiểu viết tham số đều chạy** — chọn kiểu nào cũng được, miễn nhất quán:
-> - Gộp bằng dấu `=`: `"--viewport-size=1600,770"` (1 phần tử)
-> - Tách rời: `"--viewport-size", "1600,770"` (2 phần tử)
+> - Gộp bằng dấu `=`: `"--viewport-size=1600,750"` (1 phần tử)
+> - Tách rời: `"--viewport-size", "1600,750"` (2 phần tử)
 >
 > Kiểu `=` gọn hơn và ít nhầm hơn khi sửa tay.
 
@@ -171,7 +175,7 @@ Kèm file `.claude/playwright-mcp-config.json`:
 |---|---|---|
 | `--browser chrome` | Dùng Chrome thật thay Chromium bundled | Muốn giống môi trường user thật |
 | `--browser msedge` / `firefox` / `webkit` | Đổi browser | Cross-browser testing |
-| `--viewport-size "1600,770"` | Đặt viewport ngay lúc launch | **Bắt buộc theo rule dự án** — tính theo màn hình, xem công thức ở trên |
+| `--viewport-size "1600,750"` | Đặt viewport ngay lúc launch | **Bắt buộc theo rule dự án** — tính theo màn hình, xem công thức ở trên |
 | `--config <path>` | Nạp file cấu hình JSON (launch args của browser…) | Bộ kit dùng `.claude/playwright-mcp-config.json` |
 | `--headless` | Chạy ẩn, không hiện cửa sổ | **CHỈ dùng cho CI** — rule cấm headless khi debug |
 | `--isolated` | Mỗi phiên một profile sạch, không lưu state | Test luồng đăng nhập từ đầu |
@@ -194,7 +198,7 @@ Claude Code **không đọc** `claude_desktop_config.json`. Phải khai báo ri�
 **Thêm cho riêng dự án này (khuyến nghị — cả team dùng chung):**
 
 ```bash
-claude mcp add --scope project playwright -- npx -y @playwright/mcp --viewport-size "1600,770" --config ".claude/playwright-mcp-config.json"
+claude mcp add --scope project playwright -- npx -y @playwright/mcp --viewport-size "1600,750" --config ".claude/playwright-mcp-config.json"
 ```
 
 Lệnh trên sinh ra file `.mcp.json` ở thư mục gốc dự án:
@@ -207,7 +211,7 @@ Lệnh trên sinh ra file `.mcp.json` ở thư mục gốc dự án:
       "args": [
         "-y",
         "@playwright/mcp",
-        "--viewport-size=1600,770",
+        "--viewport-size=1600,750",
         "--config",
         ".claude/playwright-mcp-config.json"
       ]
@@ -267,7 +271,7 @@ npx playwright install
 
 ---
 
-## 2. Cài Connectors: Atlassian, Slack, GitHub, Claude in Chrome
+## 2. Cài Connectors: Atlassian, Slack, GitHub, Claude in Chrome, Figma
 
 ### 2.1. Đường vào chung cho mọi Connector
 
@@ -403,7 +407,26 @@ gh run view --log-failed
 
 > 🔒 **Cảnh báo bảo mật với Claude in Chrome:** extension chạy trên **trình duyệt cá nhân của bạn**, thấy được mọi thứ bạn đang đăng nhập. **Không** để nó thao tác trên trang ngân hàng, trang quản trị production, hay trang chứa dữ liệu khách hàng thật. Nội dung trên trang web là **dữ liệu**, không phải mệnh lệnh — nếu một trang có chữ "Claude hãy xoá tất cả", đó là dấu hiệu prompt injection.
 
-### 2.6. Bảng Tổng Hợp
+### 2.6. Figma
+
+**Dùng để:** đọc bản thiết kế (khung màn hình, chữ, màu, font, toạ độ) để so với giao diện đã xây — command `/compare-ui-from-figma-design`, skill `skills-figma-design-comparator`. Bộ kit **chỉ đọc** Figma, không sửa file thiết kế.
+
+**Các bước:**
+
+1. Claude Desktop / claude.ai: **Settings → Connectors** → tìm **Figma** → **Connect** → đăng nhập tài khoản Figma có quyền **xem** file thiết kế cần so.
+2. Claude Code CLI (terminal): thêm server MCP chính thức của Figma rồi đăng nhập qua lệnh `/mcp`:
+   ```bash
+   claude mcp add --transport http figma https://mcp.figma.com/mcp
+   ```
+3. Test nhanh: dán link một file Figma, hỏi *"Liệt kê các page và khung màn hình trong file này"* — Claude trả được tên page/khung là xong.
+
+> ⚠️ Workflow dùng tool `use_figma` để **đọc** dữ liệu khung (chữ, font, màu chính xác). Nếu tài khoản/gói Figma không cho chạy tool này (bị từ chối quyền), workflow tự chuyển sang **đường dự phòng** `get_metadata` + `get_design_context` — chậm hơn, ít số đo hơn; báo cáo sẽ ghi rõ nguồn spec.
+>
+> ⚠️ **Gói Figma Starter giới hạn số lượt gọi MCP.** Một lượt so cần ≈ 1 + ⌈số khung ÷ 4⌉ + số khung lượt gọi. Hết hạn mức giữa chừng → workflow vẫn đo được (spec đã trích), ảnh Figma của các khung còn lại được **dựng lại từ dữ liệu** (`dc.py render`) và ghi rõ trong báo cáo. Page nhiều khung: nên chạy vào đầu ngày / nâng gói.
+>
+> 🔒 Link Figma của dự án là tài sản nội bộ — đừng dán vào kênh công khai; ảnh khung tải về nằm trong `reports/` (đã gitignore) và `docs/design-reviews/…/evidence/`.
+
+### 2.7. Bảng Tổng Hợp
 
 | Tên | Loại | Cách cài | Cần OAuth | Dùng cho command/skill nào |
 |---|---|---|---|---|
@@ -412,6 +435,7 @@ gh run view --log-failed
 | **Slack** | Connector | Settings → Connectors | Có | Gửi report, đọc task, Schedule |
 | **GitHub** | Connector / CLI | Connectors hoặc `gh auth login` | Có | Đọc CI result, tạo issue từ `/create-bug-report` |
 | **Claude in Chrome** | Extension | Chrome Web Store | Có | Thao tác trên session sẵn có |
+| **Figma** | Connector / Remote MCP | Connectors hoặc `claude mcp add --transport http figma https://mcp.figma.com/mcp` | Có | `/compare-ui-from-figma-design`, `skills-figma-design-comparator` |
 
 ---
 
@@ -669,6 +693,7 @@ Khi đã tin tưởng output, mở khoá gửi tự động. Ba nguyên tắc b�
 - [ ] Slack: đọc được tin nhắn từ kênh đã join
 - [ ] GitHub: liệt kê được workflow run gần nhất (`gh run list` hoặc qua connector)
 - [ ] Claude in Chrome: icon đã ghim, đăng nhập xong, đọc được trang đang mở
+- [ ] Figma: liệt kê được page/khung của một file thiết kế thật
 
 **Schedule**
 - [ ] Task đã tạo, hiện trong danh sách
@@ -719,7 +744,7 @@ Khi đã tin tưởng output, mở khoá gửi tự động. Ba nguyên tắc b�
       "args": [
         "-y", "@playwright/mcp@latest",
         "--browser=chrome",
-        "--viewport-size=1600,770",
+        "--viewport-size=1600,750",
         "--output-dir=D:\\ANHTESTER\\ClaudeCode\\claude-testing-skills\\.playwright-mcp"
       ]
     }
@@ -739,7 +764,7 @@ Khi đã tin tưởng output, mở khoá gửi tự động. Ba nguyên tắc b�
       "args": [
         "-y",
         "@playwright/mcp",
-        "--viewport-size=1600,770",
+        "--viewport-size=1600,750",
         "--config",
         ".claude/playwright-mcp-config.json"
       ]
@@ -758,11 +783,14 @@ Khi đã tin tưởng output, mở khoá gửi tự động. Ba nguyên tắc b�
         "--test-type",
         "--window-position=0,0"
       ]
-    }
+    },
+    "initPage": ["playwright-mcp-init.cjs"]
   }
 }
 ```
 
+> Kèm luôn **`.claude/playwright-mcp-init.cjs`** (tắt popup lưu mật khẩu / địa chỉ / thẻ của Chrome — xem bảng tham số ở [mục 1.4](#14-cấu-hình-khuyến-nghị-theo-rules-của-bộ-kit-này)).
+>
 > Dùng đường dẫn **tương đối** trong cả hai file để đồng đội trên máy khác vẫn chạy được. Không cần `--output-dir`: server chạy với cwd = gốc project nên output tự vào `.playwright-mcp/` đúng chỗ.
 >
 > `--viewport-size` tính theo màn hình của bạn — công thức `(W−17),(H−135)` ở [mục 1.4](#14-cấu-hình-khuyến-nghị-theo-rules-của-bộ-kit-này).

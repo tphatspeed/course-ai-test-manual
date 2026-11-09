@@ -45,19 +45,20 @@ claude-testing-skills/
 │
 │ ══════════ KHUNG — dùng lại cho mọi dự án ══════════
 ├── .claude/
-│   ├── commands/            # 39 lệnh tùy chỉnh (slash commands)
-│   ├── rules/               # 6 quy tắc bắt buộc AI phải tuân theo
-│   ├── skills/              # 20 kỹ năng chuyên biệt cho AI
+│   ├── commands/            # 43 lệnh tùy chỉnh (slash commands)
+│   ├── rules/               # 7 quy tắc bắt buộc AI phải tuân theo
+│   ├── skills/              # 23 kỹ năng chuyên biệt cho AI
 │   └── settings.json        # Cấu hình quyền hạn cho Claude Code
 ├── plans/
-│   ├── manual/              # Quy trình 6 bước sinh Manual Test Cases (AI-RBT)
-│   ├── automation/          # Quy trình 6 bước sinh Automation Scripts
-│   └── cross-module/        # Quy trình phân tích Cross-Module & Ma trận kết hợp
+│   └── master-test-plan/    # Phiếu YAML đầu vào cho /generate-master-test-plan (điền rồi gọi lệnh)
 ├── prompts/                 # 36 prompt mẫu dùng nhanh (copy → paste → gửi)
 ├── scripts/
 │   ├── testcases-viewer/    # Công cụ web xem/lọc test case
-│   ├── execution-viewer/    # Công cụ web xem kết quả chạy, so sánh các lần chạy & độ phủ automation
-│   └── bugs-viewer/         # Công cụ web lọc bug theo Severity/Priority/Trạng thái, xem lịch sử retest
+│   ├── execution-viewer/    # Công cụ web xem kết quả chạy, so sánh các lần chạy
+│   ├── traceability-viewer/ # Công cụ web xem ma trận truy vết — độ phủ REQ theo module/Story, TC chưa automate, gap
+│   ├── bugs-viewer/         # Công cụ web lọc bug theo Severity/Priority/Trạng thái, xem lịch sử retest
+│   ├── design-compare/      # Bộ đo so thiết kế Figma ↔ UI thật (figma_extract.js · collect_dom.js · dc.py)
+│   └── design-review-viewer/ # Công cụ web lọc DIFF thiết kế, xem ảnh Figma | App
 ├── CLAUDE.md                # Rule chung cho AI Agent (Claude Code đọc tự động)
 ├── SETUP_CLAUDE.md          # Hướng dẫn cài Playwright MCP, Connectors & Cowork Schedule
 ├── AI_FULL_FLOW_MANUAL.md      # Quy trình 8 chặng Manual Testing — chạy command nào, theo thứ tự nào
@@ -93,6 +94,8 @@ claude-testing-skills/
 │   ├── bugs/                                  # Bug report sinh từ TC FAIL
 │   │   ├── README.md                          # DANH MỤC bug — có cột Nền tảng
 │   │   └── <module>/<nền-tảng>/BUG_<module>_<ts>_<TC_ID>.md
+│   ├── design-reviews/                        # So thiết kế Figma ↔ UI thật — DIFF + ảnh đặt cạnh nhau
+│   │   └── <module>/<nền-tảng>/run_<timestamp>/design_compare_report.md
 │   └── user-guides/                           # Hướng dẫn sử dụng cho người dùng cuối
 │       ├── README.md                          # DANH MỤC — module × role × phiên bản phần mềm
 │       └── <module>/user_guide_<module>.md    # INDEX — tên file bất biến
@@ -104,26 +107,24 @@ claude-testing-skills/
 
 | Thư mục         | Vai trò                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `commands/`     | 39 slash commands: `/discover-system`, `/generate-automation-web`, `/generate-automation-mobile`, `/generate-automation-api`, `/generate-testcases-api`, `/generate-requirements-from-website`, `/generate-requirements-from-mobile`, `/generate-requirements-from-api`, `/update-requirements-from-ticket`, `/generate-testcases-manual-rbt`, `/update-testcases-from-impact`, `/generate-automation-from-testcases`, `/update-automation-from-impact`, `/run-and-fix-tests`, `/heal-locators`, `/review-automation-code`, `/execute-test-cases`, `/retest-fixed-bugs`, `/analyze-test-report`, `/create-bug-report`, `/review-testcases`, `/generate-traceability-matrix`, `/generate-master-test-plan`, `/generate-test-progress-report`, `/generate-test-summary-report`, `/generate-user-guide`, `/generate-api-mocks`... |
-| `rules/`        | 6 quy tắc bắt buộc: automation chung, reporting (Allure), locator strategy, Playwright, Selenium, Appium                                                                                                                                                                                                                                                                                                                                                                |
-| `skills/`       | 21 kỹ năng chuyên biệt: requirements analyzer, automation engineer, manual testing, manual test executor, UI debug (web), **mobile debug (Appium — Native/Flutter/Hybrid)**, locator healer, test data generator, framework architect, jira integration, bug reporter, test report analyzer, **test progress reporter**, **test summary reporter**, **user guide writer**, testcase reviewer, automation code reviewer, coverage traceability, api mocking...                                                                                                                              |
+| `commands/`     | 43 slash commands: `/discover-system`, `/compare-ui-from-figma-design`, `/generate-automation-web`, `/generate-automation-mobile`, `/generate-automation-api`, `/generate-testcases-api`, `/generate-requirements-from-website`, `/generate-requirements-from-mobile`, `/generate-requirements-from-api`, `/update-requirements-from-ticket`, `/generate-testcases-manual-rbt`, `/update-testcases-from-impact`, `/generate-automation-from-testcases`, `/update-automation-from-impact`, `/run-and-fix-tests`, `/heal-locators`, `/review-automation-code`, `/execute-test-cases`, `/retest-fixed-bugs`, `/analyze-test-report`, `/create-bug-report`, `/review-testcases`, `/generate-traceability-matrix`, `/generate-master-test-plan`, `/generate-test-progress-report`, `/generate-test-summary-report`, `/analyze-defect-trends`, `/assess-release-risk`, `/select-regression-tests`, `/generate-user-guide`, `/generate-api-mocks`... |
+| `rules/`        | 7 quy tắc bắt buộc: automation chung, reporting (Allure), locator strategy, Playwright, Selenium, Appium, so thiết kế Figma                                                                                                                                                                                                                                                                                                                                                                |
+| `skills/`       | 23 kỹ năng chuyên biệt: requirements analyzer, **figma design comparator**, automation engineer, manual testing, manual test executor, UI debug (web), **mobile debug (Appium — Native/Flutter/Hybrid)**, locator healer, test data generator, framework architect, jira integration, bug reporter, test report analyzer, **test progress reporter**, **test summary reporter**, **quality insights** (xu hướng lỗi · rủi ro release · chọn test), **user guide writer** (DOC/LIVE/VIDEO · ảnh + video có highlight · đa ngôn ngữ · HTML nhúng media), testcase reviewer, automation code reviewer, coverage traceability, api mocking...                                                                                                                              |
 | `settings.json` | Cấu hình quyền hạn: cho phép/cấm các hành động cụ thể (đọc file, chạy test, push code...). Riêng `settings.local.json` là cấu hình **cục bộ từng máy** — đã gitignore, không commit                                                                                                                                                                                                                                                                 |
 
 > **📌 Lưu ý về cấu trúc:** Trong Claude Code, **workflows** được gọi là **commands** và đặt trong `.claude/commands/`. Tên file dùng dấu gạch dưới (`_`). Ví dụ: `generate-automation-from-testcases.md`.
 
 ---
 
-## `plans/` — Quy Trình 6 Bước Chuyên Sâu
+## `plans/` — Phiếu Đầu Vào
 
-Dành cho các tác vụ phức tạp, cần thực hiện **tuần tự trong cùng 1 conversation**.
+Chứa phiếu người dùng **tự điền** — thứ agent không suy ra được từ hệ thống hay `docs/`. Các quy trình nhiều bước (AI-RBT 6 bước, automation, cross-module) đã nằm trọn trong command, gọi bằng `/tên`.
 
-| Plan                  | Mô tả                                                                                                                 | Bắt đầu nhanh                           |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| `plans/manual/`       | Sinh Manual Test Cases theo quy trình **AI-RBT 6 bước** (Risk-Based Testing, 15 field types, OWASP & AI Quality Gate) | Xem `plans/manual/QUICK_START.md`       |
-| `plans/automation/`   | Sinh Automation Scripts theo **6 bước** từ context → review                                                           | Xem `plans/automation/QUICK_START.md`   |
-| `plans/cross-module/` | Phân tích tính năng **đa module** & sinh **ma trận kết hợp** (Output-Class/Pairwise/Cartesian)                        | Xem `plans/cross-module/QUICK_START.md` |
+| Thư mục                   | Nội dung                                                                                                                         | Dùng với                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `plans/master-test-plan/` | Phiếu `test_plan.config.yaml` (tên ô tiếng Việt, chú thích giá trị hợp lệ) + khung rỗng `test_plan.template.yaml` + plan mẫu đã điền | `/generate-master-test-plan` |
 
-**Cách dùng:** Mở `QUICK_START.md` → Làm theo từng bước → Gửi prompt mỗi bước vào Claude Code.
+**Cách dùng:** Điền `plans/master-test-plan/test_plan.config.yaml` → gọi `/generate-master-test-plan`. Không muốn điền tay → gọi lệnh kèm tên mốc, agent hỏi một lượt rồi tự ghi vào phiếu.
 
 ### `prompts/` — Prompt Mẫu Dùng Nhanh
 
@@ -167,8 +168,12 @@ Dành cho tác vụ **đơn lẻ**, chỉ cần copy → thay `[...]` bằng d�
 | 30  | `prompt_30_generate_requirements_from_mobile.txt` | **[Mới]** Sinh REQ cho module trên app mobile — Native/Flutter/Hybrid, qua Appium MCP |
 | 31  | `prompt_31_generate_automation_api.txt`         | **[Mới]** Sinh automation API từ file TC API — fixture 2 tài khoản BOLA, dọn dữ liệu |
 | 32  | `prompt_32_generate_test_progress_report.txt`   | **[Mới]** Báo cáo tiến độ một kỳ trong đợt — so với lịch plan, trở ngại, rủi ro mới |
+| 33  | `prompt_33_compare_ui_from_figma_design.txt`  | **[Mới]** So thiết kế Figma với UI thật — WEB / MOBILE-WEB / MOBILE, ghi DIFF kèm ảnh khoanh đúng/sai |
+| 34  | `prompt_34_analyze_defect_trends.txt`         | **[Mới]** Xu hướng lỗi & vấn đề lặp lại toàn dự án — nhóm nguyên nhân gốc, điểm nóng module × nền tảng |
+| 35  | `prompt_35_assess_release_risk.txt`           | **[Mới]** Chấm rủi ro release theo module × nền tảng — 5 yếu tố minh bạch, không go/no-go |
+| 36  | `prompt_36_select_regression_tests.txt`       | **[Mới]** Chọn + xếp hạng TC cho một thay đổi trong quỹ phút — danh sách dán thẳng cho `/execute-test-cases` |
 
-> Danh mục đầy đủ chia theo 7 nhóm tra cứu: [`prompts/README.md`](prompts/README.md)
+> Danh mục đầy đủ chia theo 8 nhóm tra cứu: [`prompts/README.md`](prompts/README.md)
 
 ---
 
@@ -224,10 +229,10 @@ Copy `.claude` vào dự án là AI đã có **Rule / Skill / Command**. Nhưng 
 > ⚡ **Cài nhanh nhất:** nếu chỉ cần Playwright MCP cho Claude Code CLI, chạy đúng 1 lệnh ở thư mục gốc dự án:
 >
 > ```bash
-> claude mcp add --scope project playwright -- npx -y @playwright/mcp --viewport-size "1600,770" --config ".claude/playwright-mcp-config.json"
+> claude mcp add --scope project playwright -- npx -y @playwright/mcp --viewport-size "1600,750" --config ".claude/playwright-mcp-config.json"
 > ```
 >
-> `1600×770` là viewport headed vừa màn hình 1920×1080 — cửa sổ browser **không nở được sau khi launch**, nên đặt ở đây chứ không resize sau. Màn hình khác thì tính lại theo công thức trong [SETUP_CLAUDE.md](SETUP_CLAUDE.md) mục 1.4.
+> `1600×750` là viewport headed vừa màn hình 1920×1080 — cửa sổ browser **không nở được sau khi launch**, nên đặt ở đây chứ không resize sau. Màn hình khác thì tính lại theo công thức trong [SETUP_CLAUDE.md](SETUP_CLAUDE.md) mục 1.4.
 
 ---
 

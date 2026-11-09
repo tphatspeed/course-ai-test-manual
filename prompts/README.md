@@ -37,6 +37,7 @@ Thư mục này chứa các prompt mẫu dùng nhanh (copy → paste → gửi) 
 | 15 | `prompt_15_generate_checklist.txt` | `/generate-checklist-test` | `skills-rbt-manual-testing` | Sinh checklist tick tay (CHECKLIST mode) — 4 loại Smoke/Post-hotfix/Regression/Release-readiness, nguồn TC-based hoặc REQ-based |
 | 12 | `prompt_12_review_testcases.txt` | `/review-testcases` | `skills-testcase-reviewer` | Review chất lượng manual TCs theo rubric 6 tiêu chí — 3 modes REVIEW/FIX/AUTOMATION (AUTOMATION: chấm TC nào làm automation được) |
 | 16 | `prompt_16_execute_test_cases.txt` | `/execute-test-cases` | `skills-manual-test-executor` | Thực thi manual TC qua Playwright MCP — chấm PASS/FAIL/BLOCKED/SKIPPED, thu evidence, xuất execution report |
+| 33 | `prompt_33_compare_ui_from_figma_design.txt` | `/compare-ui-from-figma-design` | `skills-figma-design-comparator` · `skills-mobile-debug-agent` · `skills-ui-debug-agent` | **[Mới]** So bản thiết kế **Figma** với UI thật — mode **WEB** / **MOBILE-WEB** / **MOBILE**. Chỉ đọc Figma (có cache), đo lệch chữ · vị trí · khoảng cách · màu theo dp/pt/px, đi lưới soát ngoài → trong rồi ghi `DIFF` có loại · mức độ · ai xử lý kèm ảnh khoanh đúng / sai vào `docs/design-reviews/`. Kiểu chạy: đầy đủ · `nhanh` · `bổ sung` · `khung=còn-mở` |
 
 ### 🏗️ Framework & Sinh Script Automation
 
@@ -83,11 +84,21 @@ Thư mục này chứa các prompt mẫu dùng nhanh (copy → paste → gửi) 
 
 > 📌 Hai prompt này đi thành cặp: `25` công bố tiêu chí exit **trước** khi test, `24` chấm lại đúng bộ đó **sau** khi test. Dùng lệch bộ tiêu chí là lúc release sẽ cãi nhau về chuẩn.
 
+### 🧠 Phân Tích Chất Lượng Cắt Ngang (Quality Insights)
+
+| # | File | Command Tương Ứng | Skill Tích Hợp | Mô Tả & Cải Tiến Mới |
+|---|------|-------------------|----------------|----------------------|
+| 34 | `prompt_34_analyze_defect_trends.txt` | `/analyze-defect-trends` | `skills-quality-insights` · `skills-test-report-analyzer` | **[Mới]** Xu hướng lỗi & vấn đề lặp lại toàn dự án — gom nhóm nguyên nhân gốc trên kho bug + lịch sử chạy, điểm nóng module × nền tảng, TC fail chưa có bug |
+| 35 | `prompt_35_assess_release_risk.txt` | `/assess-release-risk` | `skills-quality-insights` · `skills-test-summary-reporter` | **[Mới]** Chấm rủi ro release theo module × nền tảng — 5 yếu tố minh bạch, đối chiếu plan + `RISK-*`, đề xuất kiểm soát. Không go/no-go |
+| 36 | `prompt_36_select_regression_tests.txt` | `/select-regression-tests` | `skills-quality-insights` · `skills-manual-test-executor` | **[Mới]** Chọn + xếp hạng TC cho một thay đổi trong quỹ phút — Bắt buộc · Smoke · Theo điểm, liệt kê đủ TC cố ý bỏ, danh sách dán thẳng cho `/execute-test-cases` |
+
+> 📌 Số liệu của cả ba do `scripts/quality-insights/qi.py` tính từ `docs/` — không cần nguồn dữ liệu ngoài. `35` là đầu vào cho `24` (báo cáo tổng hợp); `36` là đầu vào cho `16` (thực thi).
+
 ### 📘 Tài liệu cho Người dùng cuối
 
 | # | File | Command Tương Ứng | Skill Tích Hợp | Mô Tả & Cải Tiến Mới |
 |---|------|-------------------|----------------|----------------------|
-| 28 | `prompt_28_generate_user_guide.txt` | `/generate-user-guide` | `skills-user-guide-writer` | **[Mới]** Hướng dẫn sử dụng cho **người dùng cuối** — tổ chức theo **việc cần làm**, bám cấu trúc ISO/IEC/IEEE 26514 · 82079-1. 2 modes DOC/LIVE |
+| 28 | `prompt_28_generate_user_guide.txt` | `/generate-user-guide` | `skills-user-guide-writer` | **[Mới]** Hướng dẫn sử dụng cho **người dùng cuối** — tổ chức theo **việc cần làm**, bám cấu trúc ISO/IEC/IEEE 26514 · 82079-1. 3 modes DOC/LIVE/VIDEO · `lang` vi/en · ảnh + video có **highlight** (khung đỏ + số thứ tự click) · luôn xuất HTML nhúng ảnh + video |
 
 > 📌 Đây là loại tài liệu **duy nhất** trong repo viết cho người ngoài đọc. Nó **dùng lại** kết quả recon của `prompt_01` nhưng **không** chép nội dung sang: requirements nói *hệ thống phải làm gì*, hướng dẫn nói *người dùng làm thế nào*. Module **chưa recon** thì chạy `prompt_01` trước — skill từ chối viết hướng dẫn cho màn hình chưa từng nhìn thấy.
 
