@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checklist Regression · Đăng nhập</title>
+<style>
+:root{
+  color-scheme:light;
+  --brand-700:#2F7A29;
+  --pass:#16a34a;--fail:#dc2626;--blocked:#d97706;--skipped:#94a3b8;
+  --bg:#f6f7f9;--card:#fff;--line:#e4e7ec;--text:#111827;--muted:#6b7280;
+  --code:#f1f5f9;--warn-bg:#fffbeb;--warn-line:#fde68a;--warn-text:#92400e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text)}
+h1,h2,p{margin:0}
+a{color:var(--brand-700)}
+button,input,select{font:inherit;color:inherit}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+[hidden]{display:none!important}
+
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--line);padding:12px 20px}
+.logo{width:30px;height:30px;border-radius:7px;background:var(--brand-700);display:grid;place-items:center;flex:none}
+.logo svg{width:18px;height:18px}
+h1{font-size:16px;font-weight:700;line-height:1.3}
+.subtitle{font-size:12px;color:var(--muted)}
+.spacer{flex:1}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;font-weight:600;cursor:pointer}
+.btn:hover{background:#f3f4f6}
+.btn:disabled{opacity:.5;cursor:default;background:#fff}
+:focus-visible{outline:2px solid var(--brand-700);outline-offset:2px}
+
+main{display:flex;align-items:flex-start;gap:16px;padding:16px 20px;max-width:1800px;margin:0 auto}
+aside{width:236px;flex:none;position:sticky;top:72px;max-height:calc(100vh - 88px);overflow-y:auto}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
+.panel + .panel{margin-top:12px}
+.panel-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px}
+.progress-num{font-size:24px;font-weight:700;line-height:1.1}
+.progress-num small{font-size:14px;font-weight:500;color:var(--muted)}
+.bar{display:flex;height:6px;background:var(--line);border-radius:3px;margin:8px 0;overflow:hidden}
+.bar i{display:block;height:100%;width:0;transition:width .2s}
+.bar .pass,.dot.pass{background:var(--pass)}
+.bar .fail,.dot.fail{background:var(--fail)}
+.bar .blocked,.dot.blocked{background:var(--blocked)}
+.bar .skipped,.dot.skipped{background:var(--skipped)}
+.dot.none{background:#fff;border:1px dashed var(--muted)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;margin-bottom:8px;font-size:12px}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend b{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.hint{font-size:12px;color:var(--muted);line-height:1.4}
+.nosave{margin-top:8px;padding:7px 9px;border-radius:7px;background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-text);font-size:12px;line-height:1.4}
+.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.filters button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 0;cursor:pointer;font-size:12px;font-weight:600;line-height:1.25}
+.filters button small{display:block;font-weight:400;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--brand-700);border-color:var(--brand-700);color:#fff}
+.filters button[aria-pressed="true"] small{color:#fff}
+nav a{display:flex;justify-content:space-between;gap:8px;padding:5px 7px;border-radius:7px;color:var(--text);text-decoration:none;font-size:13px;line-height:1.35}
+nav a:hover{background:#f3f4f6}
+nav b{font-weight:500;color:var(--muted);font-size:12px;white-space:nowrap}
+
+.content{flex:1;min-width:0}
+details.box,.group,.sign{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:12px}
+details.box summary{cursor:pointer;padding:11px 16px;font-weight:600}
+details.box .inner{padding:0 16px 14px}
+dl{display:grid;grid-template-columns:150px 1fr;gap:7px 16px;margin:0}
+dt{font-weight:600}
+dd{margin:0;min-width:0}
+
+.group{scroll-margin-top:72px;overflow:hidden}
+.group-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 16px}
+h2{font-size:15px;font-weight:700}
+.group-count{font-size:12px;color:var(--muted);white-space:nowrap}
+.note{padding:9px 16px;background:var(--code);border-top:1px solid var(--line);font-size:13px}
+.note p + p{margin-top:4px}
+.note.warn{background:var(--warn-bg);border-top-color:var(--warn-line);color:var(--warn-text)}
+.note.warn code{background:#fef3c7}
+.note.warn a{color:inherit}
+
+table{width:100%;border-collapse:collapse}
+.sheet{table-layout:fixed}
+th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:7px 10px;background:#fafbfc}
+th,td{border-top:1px solid var(--line);vertical-align:top}
+td{padding:9px 10px}
+.c0{width:38px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.c1{width:104px;text-align:center}
+.c2{width:27%;font-weight:500}
+.c4{width:66px;text-align:center}
+.c5{width:118px}
+.c6{width:150px}
+th.c0,th.c1,th.c4{text-align:center}
+.status{width:84px;padding:4px 0;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--muted);font-size:12px;font-weight:600;line-height:1.4;white-space:nowrap;cursor:pointer}
+.status:hover{border-color:var(--muted)}
+.status[data-status="none"]{border-style:dashed}
+.status[data-status="pass"]{background:#dcfce7;border-color:#86efac;color:#166534}
+.status[data-status="fail"]{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.status[data-status="blocked"]{background:#fef3c7;border-color:#fcd34d;color:#92400e}
+.status[data-status="skipped"]{background:#e2e8f0;border-color:#cbd5e1;color:#334155}
+tr[data-status="pass"]{background:#f0fdf4}
+tr[data-status="fail"]{background:#fef2f2}
+tr[data-status="blocked"]{background:#fffbeb}
+tr[data-status="skipped"]{background:#f8fafc}
+.prio{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:700}
+.p1{background:#fef2f2;color:#b91c1c}
+.p2{background:#fffbeb;color:#b45309}
+.p3{background:#f1f5f9;color:#475569}
+.id{display:block;font:11.5px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;color:#374151}
+.tool{display:inline-block;font-size:11px;font-weight:600;color:#475569;background:var(--code);border-radius:4px;padding:0 5px;white-space:nowrap}
+
+.cut td,.cut th{padding:8px 10px}
+.cut th:first-child,.cut td:first-child{width:30%}
+.cut{margin:10px 0}
+.tail{margin-top:8px}
+details.box ul{margin:0;padding-left:18px}
+details.box li + li{margin-top:4px}
+
+.sign{padding:12px 16px}
+.sign h2{margin-bottom:10px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.fields span{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:3px}
+.fields input,.fields select{width:100%;height:34px;padding:0 8px;border:1px solid var(--line);border-radius:7px;background:#fff}
+
+@media screen and (max-width:1180px){
+  main{display:block}
+  aside{position:static;width:auto;max-height:none;overflow:visible;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .panel + .panel{margin-top:0}
+  .panel.groups{display:none}
+}
+@media screen and (max-width:980px){
+  .sheet,.sheet tbody,.cut,.cut tbody{display:block}
+  .sheet thead,.cut thead{display:none}
+  .sheet tr{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"num tick prio" "item item item" "exp exp exp" "req req req" "tc tc tc";gap:6px 8px;padding:10px 16px;border-top:1px solid var(--line)}
+  .sheet td{border:0;padding:0;width:auto;text-align:left;min-width:0}
+  .sheet .c0{grid-area:num;align-self:center}
+  .sheet .c1{grid-area:tick}
+  .sheet .c2{grid-area:item}
+  .sheet .c3{grid-area:exp}
+  .sheet .c4{grid-area:prio;align-self:center}
+  .sheet .c5{grid-area:req}
+  .sheet .c6{grid-area:tc}
+  .sheet .c3::before,.sheet .c5::before,.sheet .c6::before,.cut td::before{content:attr(data-label);display:block;font-size:12px;font-weight:600;color:var(--muted)}
+  .sheet .id{display:inline-block;margin-right:10px}
+  .cut tr{display:block;padding:8px 0;border-top:1px solid var(--line)}
+  .cut td,.cut td:first-child{display:block;border:0;padding:2px 0;width:auto}
+}
+@media screen and (max-width:640px){
+  header{position:static;padding:12px 16px}
+  .head-text{flex:1 1 200px;min-width:0}
+  main{padding:12px 16px}
+  aside{grid-template-columns:1fr}
+  dl{grid-template-columns:1fr;gap:2px}
+  dd{margin-bottom:8px}
+}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff;font-size:11px}
+  header{position:static;border:0;padding:0 0 8px}
+  .btn,aside{display:none}
+  main{display:block;padding:0;max-width:none}
+  details.box,.group,.sign{border-radius:0;margin-bottom:8px}
+  .group{overflow:visible}
+  thead{display:table-header-group}
+  tr{break-inside:avoid}
+  tr[data-status]{background:none}
+  .status,.status[data-status]{background:none;border:1px solid #999;border-style:solid;color:#111}
+  .status[data-status="none"]{color:transparent}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <div class="head-text">
+    <h1>Checklist Regression — Đăng nhập (LOGIN) · Web</h1>
+    <div class="subtitle">CL-regression_20261108 · 40 mục · ~45 phút · lập 08-11-2026</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn" id="reset" type="button">Xoá trạng thái</button>
+  <button class="btn" id="print" type="button">In checklist</button>
+</header>
+<main>
+  <aside>
+    <div class="panel">
+      <div class="panel-title">Tiến độ</div>
+      <div class="progress-num"><span id="done">0</span> <small>/ <span id="all">40</span> đã chạy</small></div>
+      <div class="bar"><i class="pass" data-bar="pass"></i><i class="fail" data-bar="fail"></i><i class="blocked" data-bar="blocked"></i><i class="skipped" data-bar="skipped"></i></div>
+      <div class="legend">
+        <span><i class="dot pass"></i>Pass<b data-n="pass">0</b></span>
+        <span><i class="dot fail"></i>Fail<b data-n="fail">0</b></span>
+        <span><i class="dot blocked"></i>Blocked<b data-n="blocked">0</b></span>
+        <span><i class="dot skipped"></i>Skipped<b data-n="skipped">0</b></span>
+        <span><i class="dot none"></i>Chưa chạy<b data-n="none">0</b></span>
+      </div>
+      <p class="hint">Bấm ô ở cột Trạng thái để chuyển trạng thái. Kết quả lưu trên trình duyệt này, không ghi vào file.</p>
+      <p class="nosave" id="nosave" hidden>Khung xem này không lưu được trạng thái, refresh sẽ mất. Hãy mở file bằng Chrome, Edge hoặc Safari.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Lọc theo Priority</div>
+      <div class="filters" role="group" aria-label="Lọc theo Priority">
+        <button type="button" data-filter="all" aria-pressed="true">Tất cả<small>40</small></button>
+        <button type="button" data-filter="P1" aria-pressed="false">P1<small>15</small></button>
+        <button type="button" data-filter="P2" aria-pressed="false">P2<small>22</small></button>
+        <button type="button" data-filter="P3" aria-pressed="false">P3<small>3</small></button>
+      </div>
+    </div>
+    <div class="panel groups">
+      <div class="panel-title">Nhóm chức năng</div>
+      <nav><a href="#g0" data-nav="0"><span>Giao diện &amp; lối vào</span><b data-navcount="0"></b></a><a href="#g1" data-nav="1"><span>Đăng nhập khu quản trị</span><b data-navcount="1"></b></a><a href="#g2" data-nav="2"><span>Phiên đăng nhập &amp; Ghi nhớ</span><b data-navcount="2"></b></a><a href="#g3" data-nav="3"><span>Đăng xuất</span><b data-navcount="3"></b></a><a href="#g4" data-nav="4"><span>Quên mật khẩu</span><b data-navcount="4"></b></a><a href="#g5" data-nav="5"><span>Đăng nhập cổng khách hàng</span><b data-navcount="5"></b></a><a href="#g6" data-nav="6"><span>Phân quyền hai khu xác thực</span><b data-navcount="6"></b></a><a href="#g7" data-nav="7"><span>Rà lại bug đang mở</span><b data-navcount="7"></b></a></nav>
+    </div>
+  </aside>
+  <div class="content">
+    <details class="box">
+      <summary>Thông tin checklist</summary>
+      <div class="inner"><dl><dt>Mã checklist</dt><dd><code>CL-regression_20261108</code> — mã mục khi chạy = <code>CL-regression_20261108-&lt;số mục 2 chữ số&gt;</code></dd><dt>Loại</dt><dd>Regression (module). Yêu cầu ghi <code>testcase chính</code>, không thuộc 4 loại chuẩn → chọn Regression vì phủ cả luồng đúng lẫn luồng sai chính của module; chỉ muốn rà nhanh luồng sống còn thì chạy các mục <code>P1</code>.</dd><dt>Nguồn</dt><dd>TC-based — rút gọn từ <a href="../../../testcases/login/TEST_CASES_LOGIN_SUMMARY.md"><code>TEST_CASES_LOGIN_SUMMARY.md</code></a> (88 TC · <a href="../../../testcases/login/web/parts/part_01_web_smoke.md">part 01</a> · <a href="../../../testcases/login/web/parts/part_02_web_quan_tri.md">part 02</a> · <a href="../../../testcases/login/web/parts/part_03_web_quen_mat_khau_cong.md">part 03</a> · <a href="../../../testcases/login/web/parts/part_04_web_ky_thuat_phi_chuc_nang.md">part 04</a>) · Requirements: <a href="../../../requirements/login/REQUIREMENTS_LOGIN_SUMMARY.md"><code>REQUIREMENTS_LOGIN_SUMMARY.md</code></a></dd><dt>Scope</dt><dd>4 màn hình xác thực (khu quản trị + cổng khách hàng), phiên đăng nhập, đăng xuất, ranh giới Staff / contact, 7 bug đang mở — lấy từ V1 + V2 + V3 <code>Permission</code> + rà lại bug cũ. Vai trò: Staff (<code>EMAIL_ADMIN</code>) · contact (<code>EMAIL_CUSTOMER</code>).</dd><dt>Ngày lập</dt><dd>08-11-2026</dd></dl></div>
+    </details>
+    <details class="box" open>
+      <summary>Điều kiện chung</summary>
+      <div class="inner"><dl><dt>Địa chỉ</dt><dd>Gốc <code>https://crm.anhtester.com</code> (<code>BASE_URL</code>) — mọi đường dẫn trong bảng nối sau địa chỉ này</dd><dt>4 màn hình</dt><dd>Login quản trị <code>/admin/authentication</code> · Quên mật khẩu quản trị <code>/admin/authentication/forgot_password</code> · Login cổng <code>/authentication/login</code> · Quên mật khẩu cổng <code>/authentication/forgot_password</code></dd><dt>Trạng thái đầu mục</dt><dd>Cửa sổ ẩn danh mới, chưa đăng nhập, giao diện tiếng Anh — trừ nhóm có ghi điều kiện riêng</dd><dt>Tài khoản</dt><dd><code>EMAIL_ADMIN</code> / <code>PASSWORD_ADMIN</code> (Staff) · <code>EMAIL_CUSTOMER</code> / <code>PASSWORD_CUSTOMER</code> (contact) trong <code>.env</code> — <strong>người chạy tự nhập</strong>, không chép giá trị vào báo cáo</dd><dt>Email mẫu</dt><dd><code>auto_login_&lt;số&gt;…</code> là email <strong>không tồn tại</strong> — mỗi lần chạy đổi phần số thành timestamp hiện tại</dd><dt>Ký hiệu</dt><dd>🔧 cần DevTools · <code>P1</code> luồng sống còn (đăng nhập, phiên, đăng xuất, phân quyền) · <code>P2</code> màn hình và validation · <code>P3</code> lỗi nhỏ</dd><dt>⚠️ Môi trường dùng chung</dt><dd>Mục 12 chỉ gửi sai <strong>đúng 1 lần</strong> trên tài khoản dùng chung · <strong>Không</strong> gửi Quên mật khẩu bằng <code>EMAIL_ADMIN</code> / <code>EMAIL_CUSTOMER</code> (sẽ phát email thật)</dd></dl></div>
+    </details>
+    <section class="group" id="g0" data-group="0"><div class="group-head"><h2>Giao diện &amp; lối vào</h2><span class="group-count" data-count="0"></span></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="1" data-prio="P2"><td class="c0">1</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="1" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Mở Login quản trị, gõ <code>abc123</code> vào ô Password</td><td class="c3" data-label="Kết quả kỳ vọng">Đủ logo, tiêu đề <code>Login</code>, ô <code>Email Address</code> có con trỏ sẵn, ô <code>Password</code> chỉ hiện dấu chấm, <code>Remember me</code> chưa tích, nút <code>Login</code>, liên kết <code>Forgot Password?</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-02</span><span class="id">REQ-LOGIN-03</span><span class="id">REQ-LOGIN-04</span><span class="id">REQ-LOGIN-21</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_001</span></td></tr><tr data-num="2" data-prio="P2"><td class="c0">2</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="2" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bấm <code>Forgot Password?</code> ở Login quản trị</td><td class="c3" data-label="Kết quả kỳ vọng">Sang <code>/admin/authentication/forgot_password</code>: tiêu đề <code>Forgot Password</code>, ô <code>Email Address</code> trống, nút <code>Confirm</code>, không có liên kết về Login</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-15</span><span class="id">REQ-LOGIN-32</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_002</span><span class="id">CRM_LOGIN_TC_006</span></td></tr><tr data-num="3" data-prio="P2"><td class="c0">3</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="3" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Mở Login cổng</td><td class="c3" data-label="Kết quả kỳ vọng">Tiêu đề <code>Please login</code>, <code>Language</code> hiện <code>English</code>, ô <code>Email Address</code>, <code>Password</code>, <code>Remember me</code> chưa tích, nút <code>Login</code>, liên kết <code>Forgot Password?</code>; không có <code>Register</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-40</span><span class="id">REQ-LOGIN-49</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_003</span></td></tr><tr data-num="4" data-prio="P2"><td class="c0">4</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="4" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bấm <code>Forgot Password?</code> ở Login cổng, rồi bấm <code>Login</code> đầu trang</td><td class="c3" data-label="Kết quả kỳ vọng">Trang <code>Forgot Password</code> có ô <code>Email Address</code>, nút <code>Submit</code>, tab ghi <code>Forgot Password?</code>; bấm <code>Login</code> về <code>Please login</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-40</span><span class="id">REQ-LOGIN-51</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_004</span><span class="id">CRM_LOGIN_TC_007</span></td></tr><tr data-num="5" data-prio="P1"><td class="c0">5</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="5" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Mở <code>/admin/clients</code> khi chưa đăng nhập, rồi đăng nhập đúng</td><td class="c3" data-label="Kết quả kỳ vọng">Bị đưa về <code>/admin/authentication</code>, không thấy nội dung quản trị; đăng nhập xong vào Dashboard, không phải trang Customers</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-01</span><span class="id">REQ-LOGIN-18</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_005</span><span class="id">CRM_LOGIN_TC_024</span></td></tr></tbody></table></section>
+<section class="group" id="g1" data-group="1"><div class="group-head"><h2>Đăng nhập khu quản trị</h2><span class="group-count" data-count="1"></span></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="6" data-prio="P1"><td class="c0">6</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="6" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập khu quản trị bằng <code>EMAIL_ADMIN</code> / <code>PASSWORD_ADMIN</code>, không tích <code>Remember me</code></td><td class="c3" data-label="Kết quả kỳ vọng">Vào Dashboard: tab có chữ <code>Dashboard</code>, địa chỉ <code>/admin/</code>, không còn form đăng nhập</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-17</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_008</span></td></tr><tr data-num="7" data-prio="P2"><td class="c0">7</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="7" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập khu quản trị bằng <code>EMAIL_ADMIN</code> viết HOA, thêm 2 dấu cách hai đầu</td><td class="c3" data-label="Kết quả kỳ vọng">Vào Dashboard, không báo lỗi định dạng hay sai thông tin</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-71</span><span class="id">REQ-LOGIN-72</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_017</span><span class="id">CRM_LOGIN_TC_018</span></td></tr><tr data-num="8" data-prio="P2"><td class="c0">8</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="8" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bỏ trống Email và Password ở Login quản trị, bấm <code>Login</code></td><td class="c3" data-label="Kết quả kỳ vọng">Đúng 2 khung đỏ <code>The Password field is required.</code> và <code>The Email Address field is required.</code> (không chấm thứ tự); không vào Dashboard</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-05</span><span class="id">REQ-LOGIN-06</span><span class="id">REQ-LOGIN-07</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_012</span><span class="id">CRM_LOGIN_TC_013</span><span class="id">CRM_LOGIN_TC_014</span></td></tr><tr data-num="9" data-prio="P2"><td class="c0">9</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="9" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập Email <code>auto_login_1791100002</code>, Password <code>Auto@12345</code> ở Login quản trị, bấm <code>Login</code></td><td class="c3" data-label="Kết quả kỳ vọng">Trình duyệt hiện bong bóng cảnh báo dưới ô Email; trang không nạp lại, không có khung đỏ, chữ ở hai ô còn nguyên</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-08</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_015</span></td></tr><tr data-num="10" data-prio="P2"><td class="c0">10</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="10" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập Email <code>auto_login_1791100003@autotest</code>, Password <code>Auto@12345</code> ở Login quản trị, bấm <code>Login</code></td><td class="c3" data-label="Kết quả kỳ vọng">1 khung đỏ <code>The Email Address field must contain a valid email address.</code>; ô Email không hiện lại chuỗi đã nhập</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-09</span><span class="id">REQ-LOGIN-12</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_016</span></td></tr><tr data-num="11" data-prio="P1"><td class="c0">11</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="11" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập Email <code>auto_login_1791100004@auto.test</code>, Password <code>Auto@12345</code> ở Login quản trị, bấm <code>Login</code>, nhấn F5</td><td class="c3" data-label="Kết quả kỳ vọng">Khung đỏ <code>Invalid email or password</code>, hai ô trống; sau F5 khung đỏ biến mất, không hỏi gửi lại biểu mẫu</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-10</span><span class="id">REQ-LOGIN-11</span><span class="id">REQ-LOGIN-12</span><span class="id">REQ-LOGIN-13</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_019</span><span class="id">CRM_LOGIN_TC_021</span></td></tr><tr data-num="12" data-prio="P1"><td class="c0">12</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="12" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập <code>EMAIL_ADMIN</code>, mật khẩu sai <code>auto_wrong_1791100005</code> ở Login quản trị, bấm <code>Login</code> đúng 1 lần</td><td class="c3" data-label="Kết quả kỳ vọng">Cùng khung đỏ <code>Invalid email or password</code> như mục 11, cùng địa chỉ — không phân biệt được email có tồn tại</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-10</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_020</span></td></tr><tr data-num="13" data-prio="P2"><td class="c0">13</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="13" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bấm <code>Login</code> hai lần thật nhanh với tài khoản <code>EMAIL_ADMIN</code> đúng</td><td class="c3" data-label="Kết quả kỳ vọng">Vào Dashboard; không hiện trang lỗi, không bị đòi đăng nhập lại</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-17</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_035</span></td></tr></tbody></table></section>
+<section class="group" id="g2" data-group="2"><div class="group-head"><h2>Phiên đăng nhập &amp; Ghi nhớ</h2><span class="group-count" data-count="2"></span></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="14" data-prio="P1"><td class="c0">14</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="14" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bấm Back sau khi đăng nhập, nhấn F5, rồi mở Login quản trị</td><td class="c3" data-label="Kết quả kỳ vọng">Không lần nào hiện form đăng nhập, luôn ở Dashboard <code>/admin/</code></td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-17</span><span class="id">REQ-LOGIN-19</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_009</span><span class="id">CRM_LOGIN_TC_036</span></td></tr><tr data-num="15" data-prio="P1"><td class="c0">15</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="15" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập không tích <code>Remember me</code>, xoá cookie <code>sp_session</code>, mở <code>/admin/</code> <span class="tool" title="Cần DevTools">🔧 DevTools</span></td><td class="c3" data-label="Kết quả kỳ vọng">Bị đưa về trang Login quản trị, không tự đăng nhập lại</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-22</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_025</span></td></tr><tr data-num="16" data-prio="P1"><td class="c0">16</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="16" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập có tích <code>Remember me</code>, xoá mọi cookie trừ <code>autologin</code>, mở <code>/admin/</code> <span class="tool" title="Cần DevTools">🔧 DevTools</span></td><td class="c3" data-label="Kết quả kỳ vọng">Vào thẳng Dashboard, không đi qua trang Login</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-23</span><span class="id">REQ-LOGIN-24</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_026</span><span class="id">CRM_LOGIN_TC_027</span></td></tr></tbody></table></section>
+<section class="group" id="g3" data-group="3"><div class="group-head"><h2>Đăng xuất</h2><span class="group-count" data-count="3"></span></div><div class="note"><p><strong>Điều kiện nhóm:</strong> đã đăng nhập khu quản trị bằng <code>EMAIL_ADMIN</code>, thanh đầu trang không có bộ đếm giờ đang chạy.</p><p><strong>Riêng mục 21:</strong> trước khi chạy, tạo task <code>auto_login_timer_1791100008</code> ở menu <code>Tasks</code>, bấm <code>Start Timer</code>. Sau khi chạy: đăng nhập lại, dừng bộ đếm, xoá đúng task đó.</p></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="17" data-prio="P1"><td class="c0">17</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="17" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bấm ảnh đại diện, bấm <code>Logout</code>, rồi mở <code>/admin/</code></td><td class="c3" data-label="Kết quả kỳ vọng">Menu đúng 5 mục <code>My Profile</code> · <code>My Timesheets</code> · <code>Edit Profile</code> · <code>Language</code> · <code>Logout</code>; về <code>/admin/authentication</code>; mở lại vẫn về Login</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-26</span><span class="id">REQ-LOGIN-27</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_010</span></td></tr><tr data-num="18" data-prio="P1"><td class="c0">18</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="18" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bấm nút Back của trình duyệt ngay sau khi <code>Logout</code></td><td class="c3" data-label="Kết quả kỳ vọng">Không thấy lại Dashboard hay dữ liệu quản trị; hiện trang Login, địa chỉ <code>/admin/authentication</code></td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-27</span><span class="id">REQ-LOGIN-30</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_033</span></td></tr><tr data-num="19" data-prio="P2"><td class="c0">19</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="19" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Mở tab hai trang <code>Customers</code>, <code>Logout</code> ở tab một, bấm <code>Dashboard</code> ở tab hai</td><td class="c3" data-label="Kết quả kỳ vọng">Tab hai bị đưa về trang Login quản trị, không hiện Dashboard</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-01</span><span class="id">REQ-LOGIN-27</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_037</span></td></tr><tr data-num="20" data-prio="P1"><td class="c0">20</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="20" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Sao chép <code>sp_session</code>, bấm <code>Logout</code>, gán lại giá trị cũ, mở <code>/admin/</code> <span class="tool" title="Cần DevTools">🔧 DevTools</span></td><td class="c3" data-label="Kết quả kỳ vọng">Vẫn ở trang Login quản trị — phiên cũ không dùng lại được</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-27</span><span class="id">REQ-LOGIN-29</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_032</span></td></tr><tr data-num="21" data-prio="P2"><td class="c0">21</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="21" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bấm <code>Logout</code> khi bộ đếm giờ đang chạy, rồi chọn <code>Logout</code> trong popup</td><td class="c3" data-label="Kết quả kỳ vọng">Chưa đăng xuất, hiện popup <code>Started tasks timers found!</code> <code>Are you sure you want to logout without stopping the timers?</code>; chọn <code>Logout</code> thì về trang Login</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-28</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_031</span></td></tr></tbody></table></section>
+<section class="group" id="g4" data-group="4"><div class="group-head"><h2>Quên mật khẩu</h2><span class="group-count" data-count="4"></span></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="22" data-prio="P2"><td class="c0">22</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="22" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập <code>auto_login_1791100010@autotest</code> ở Quên mật khẩu quản trị, bấm <code>Confirm</code></td><td class="c3" data-label="Kết quả kỳ vọng">Khung đỏ <code>The Email Address field must contain a valid email address.</code>; ô Email giữ nguyên chuỗi đã nhập</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-35</span><span class="id">REQ-LOGIN-37</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_041</span></td></tr><tr data-num="23" data-prio="P2"><td class="c0">23</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="23" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập <code>auto_login_1791100017@autotest</code> ở Quên mật khẩu cổng, bấm <code>Submit</code></td><td class="c3" data-label="Kết quả kỳ vọng">Khung đỏ <code>The Email Address field must contain a valid email address.</code>; ô Email giữ nguyên chuỗi đã nhập</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-54</span><span class="id">REQ-LOGIN-56</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_057</span></td></tr></tbody></table></section>
+<section class="group" id="g5" data-group="5"><div class="group-head"><h2>Đăng nhập cổng khách hàng</h2><span class="group-count" data-count="5"></span></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="24" data-prio="P1"><td class="c0">24</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="24" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập Login cổng bằng <code>EMAIL_CUSTOMER</code> / <code>PASSWORD_CUSTOMER</code></td><td class="c3" data-label="Kết quả kỳ vọng">Rời trang Login, về trang chủ cổng có menu <code>Projects</code> · <code>Invoices</code>; không còn form <code>Please login</code>, không có thông báo lỗi</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-50</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_011</span></td></tr><tr data-num="25" data-prio="P2"><td class="c0">25</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="25" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bỏ trống Email và Password ở Login cổng, bấm <code>Login</code></td><td class="c3" data-label="Kết quả kỳ vọng">Chữ đỏ ngay dưới từng ô: <code>The Email Address field is required.</code> · <code>The Password field is required.</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-42</span><span class="id">REQ-LOGIN-43</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_048</span><span class="id">CRM_LOGIN_TC_049</span></td></tr><tr data-num="26" data-prio="P2"><td class="c0">26</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="26" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập Email <code>auto_login_1791100013</code>, Password <code>Auto@12345</code> ở Login cổng, bấm <code>Login</code></td><td class="c3" data-label="Kết quả kỳ vọng">Trình duyệt không chặn, trang nạp lại; dưới ô Email hiện chữ đỏ <code>The Email Address field must contain a valid email address.</code>, ô Email trống</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-41</span><span class="id">REQ-LOGIN-45</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_047</span></td></tr><tr data-num="27" data-prio="P1"><td class="c0">27</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="27" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập Email <code>auto_login_1791100015@auto.test</code>, Password <code>Auto@12345</code> ở Login cổng, bấm <code>Login</code></td><td class="c3" data-label="Kết quả kỳ vọng">Góc trên phải hiện thông báo nổi <code>Invalid username or password</code>, tự ẩn sau khoảng 3,5 giây; ô Email trống, vẫn ở <code>Please login</code></td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-44</span><span class="id">REQ-LOGIN-45</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_050</span></td></tr><tr data-num="28" data-prio="P2"><td class="c0">28</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="28" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Chọn <code>Language</code> = <code>Vietnamese</code> ở Login cổng, mở lại trang, rồi mở Login quản trị</td><td class="c3" data-label="Kết quả kỳ vọng">Cổng hiện <code>Xin hãy đăng nhập</code> · <code>Địa chỉ email</code> · <code>Mật khẩu</code>, mở lại vẫn tiếng Việt; Login quản trị vẫn tiếng Anh</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-46</span><span class="id">REQ-LOGIN-47</span><span class="id">REQ-LOGIN-48</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_051</span><span class="id">CRM_LOGIN_TC_052</span><span class="id">CRM_LOGIN_TC_053</span></td></tr><tr data-num="29" data-prio="P2"><td class="c0">29</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="29" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Mở <code>/authentication/register</code> khi chưa đăng nhập</td><td class="c3" data-label="Kết quả kỳ vọng">Không hiện form đăng ký; tự về <code>Please login</code>, địa chỉ chứa <code>/authentication/login</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-49</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_054</span></td></tr></tbody></table></section>
+<section class="group" id="g6" data-group="6"><div class="group-head"><h2>Phân quyền hai khu xác thực</h2><span class="group-count" data-count="6"></span></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="30" data-prio="P1"><td class="c0">30</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="30" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập Login cổng bằng <code>EMAIL_ADMIN</code> / <code>PASSWORD_ADMIN</code> (Staff)</td><td class="c3" data-label="Kết quả kỳ vọng">Thông báo nổi <code>Invalid username or password</code>; vẫn ở <code>Please login</code>, không vào khu khách hàng</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-60</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_061</span></td></tr><tr data-num="31" data-prio="P1"><td class="c0">31</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="31" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập Login quản trị bằng <code>EMAIL_CUSTOMER</code> / <code>PASSWORD_CUSTOMER</code> (contact), rồi mở <code>/admin/</code></td><td class="c3" data-label="Kết quả kỳ vọng">Không vào Dashboard, ở lại trang Login kèm khung đỏ báo lỗi; mở <code>/admin/</code> vẫn về Login</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-59</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_062</span></td></tr></tbody></table></section>
+<section class="group" id="g7" data-group="7"><div class="group-head"><h2>Rà lại bug đang mở</h2><span class="group-count" data-count="7"></span></div><div class="note warn"><p>Cả 9 mục FAIL ở lần chạy 10-10-2026 và ứng với 7 bug còn mở (<a href="../../../bugs/README.md">danh mục bug</a>). Vẫn FAIL → ghi <strong>FAIL — lỗi đã biết</strong>, không mở bug mới, <strong>không</strong> hạ kỳ vọng (<code>RISK-LOGIN-07</code>). PASS → chạy <code>/retest-fixed-bugs</code> để đóng bug.</p></div><table class="sheet"><thead><tr><th class="c0" scope="col">#</th><th class="c1" scope="col">Trạng thái</th><th class="c2" scope="col">Hạng mục kiểm tra</th><th class="c3" scope="col">Kết quả kỳ vọng</th><th class="c4" scope="col">Priority</th><th class="c5" scope="col">REQ ID</th><th class="c6" scope="col">TC ID liên quan</th></tr></thead><tbody><tr data-num="32" data-prio="P1"><td class="c0">32</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="32" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">So giá trị <code>sp_session</code> trước và sau khi đăng nhập quản trị <span class="tool" title="Cần DevTools">🔧 DevTools</span></td><td class="c3" data-label="Kết quả kỳ vọng">Hai giá trị khác nhau — đăng nhập cấp mã phiên mới (so trong công cụ, không chép ra báo cáo)</td><td class="c4" data-label="Priority"><span class="prio p1">P1</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-65</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_070</span></td></tr><tr data-num="33" data-prio="P2"><td class="c0">33</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="33" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập <code>auto_login_1791100011@auto.test</code> ở Quên mật khẩu quản trị, bấm <code>Confirm</code></td><td class="c3" data-label="Kết quả kỳ vọng">Thông báo chứa <code>If this email address exists in our system, we have sent password reset instructions.</code>; không có <code>Email not found</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-36</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_042</span></td></tr><tr data-num="34" data-prio="P2"><td class="c0">34</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="34" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Nhập <code>auto_login_1791100018@auto.test</code> ở Quên mật khẩu cổng, bấm <code>Submit</code></td><td class="c3" data-label="Kết quả kỳ vọng">Thông báo chứa <code>If this email address exists in our system, we have sent password reset instructions.</code>; không có <code>Email not found</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-55</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_058</span></td></tr><tr data-num="35" data-prio="P2"><td class="c0">35</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="35" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đăng nhập có tích <code>Remember me</code>, xem cờ <code>HttpOnly</code> của cookie <code>autologin</code> <span class="tool" title="Cần DevTools">🔧 DevTools</span></td><td class="c3" data-label="Kết quả kỳ vọng">Cookie <code>autologin</code> có <code>HttpOnly</code> bật — script trên trang không đọc được</td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-63</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_071</span></td></tr><tr data-num="36" data-prio="P2"><td class="c0">36</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="36" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bỏ trống Email ở Quên mật khẩu quản trị, bấm <code>Confirm</code></td><td class="c3" data-label="Kết quả kỳ vọng">Khung đỏ <code>The Email Address field is required.</code>; không có <code>Email not found</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-34</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_040</span></td></tr><tr data-num="37" data-prio="P2"><td class="c0">37</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="37" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Bỏ trống Email ở Quên mật khẩu cổng, bấm <code>Submit</code></td><td class="c3" data-label="Kết quả kỳ vọng">Khung đỏ <code>The Email Address field is required.</code>; không có <code>Email not found</code></td><td class="c4" data-label="Priority"><span class="prio p2">P2</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-53</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_056</span></td></tr><tr data-num="38" data-prio="P3"><td class="c0">38</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="38" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Mở <code>/admin/authentication/reset_password</code> không kèm tham số</td><td class="c3" data-label="Kết quả kỳ vọng">Hiện trang báo không tìm thấy (Not Found), không phải trang lỗi máy chủ</td><td class="c4" data-label="Priority"><span class="prio p3">P3</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-64</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_045</span></td></tr><tr data-num="39" data-prio="P3"><td class="c0">39</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="39" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Đọc tiêu đề tab trang Quên mật khẩu quản trị</td><td class="c3" data-label="Kết quả kỳ vọng">Đúng nguyên văn <code>Forgot Password?</code>, không chứa chữ <code>Login</code></td><td class="c4" data-label="Priority"><span class="prio p3">P3</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-69</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_046</span></td></tr><tr data-num="40" data-prio="P3"><td class="c0">40</td><td class="c1" data-label="Trạng thái"><button type="button" class="status" data-status="none" data-status-btn="40" title="Bấm để chuyển trạng thái">Chưa chạy</button></td><td class="c2" data-label="Hạng mục kiểm tra">Mở Login quản trị, xem tab Console của DevTools <span class="tool" title="Cần DevTools">🔧 DevTools</span></td><td class="c3" data-label="Kết quả kỳ vọng">Không có cảnh báo của Chrome về ô nhập thiếu thuộc tính tự điền (<code>autocomplete</code>)</td><td class="c4" data-label="Priority"><span class="prio p3">P3</span></td><td class="c5" data-label="REQ ID"><span class="id">REQ-LOGIN-70</span></td><td class="c6" data-label="TC ID liên quan"><span class="id">CRM_LOGIN_TC_076</span></td></tr></tbody></table></section>
+    <details class="box">
+      <summary>Không áp dụng cho module này</summary>
+      <div class="inner"><ul><li><strong>Data Table / List</strong> — module không có bảng dữ liệu.</li><li><strong>CRUD Lifecycle</strong> — module không tạo / sửa / xoá bản ghi nghiệp vụ (task ở mục 21 chỉ là dữ liệu dựng để hiện popup).</li><li><strong>Status Flow</strong> — không có entity mang trạng thái; chuyển trạng thái phiên đã rà ở nhóm Phiên đăng nhập và Đăng xuất.</li><li><strong>Field-Level ngoài 4 loại Email · Password · Checkbox · Dropdown</strong> — module không có trường ngày, số, tiền, file, rich text.</li></ul></div>
+    </details>
+    <details class="box">
+      <summary>Phần đã cắt khỏi checklist</summary>
+      <div class="inner">
+        <p>Module có 88 TC; ngưỡng Regression là 40 mục. Checklist phủ 52 TC. Phần dưới vẫn chạy được từ bộ TC chi tiết.</p>
+        <table class="cut"><thead><tr><th scope="col">Phần cắt</th><th scope="col">TC</th><th scope="col">Lý do</th></tr></thead><tbody><tr><td data-label="Phần cắt">V3 <code>Security</code> (ngoài các bug đang mở)</td><td data-label="TC"><code>_063</code>–<code>_069</code> · <code>_072</code> · <code>_073</code></td><td data-label="Lý do">Regression chỉ lấy nhánh V3 <code>Permission</code></td></tr><tr><td data-label="Phần cắt">V4 <code>Accessibility</code> · <code>Responsive</code> · <code>Compatibility</code></td><td data-label="TC"><code>_074</code> · <code>_075</code> · <code>_077</code>–<code>_079</code> · <code>_081</code>–<code>_083</code> · <code>_086</code>–<code>_088</code></td><td data-label="Lý do">Regression bỏ V4, trừ phần rà lại bug cũ</td></tr><tr><td data-label="Phần cắt">Chờ hộp thư test</td><td data-label="TC"><code>_043</code> · <code>_044</code> · <code>_059</code> · <code>_060</code></td><td data-label="Lý do">BLOCKED — chưa đọc được email đặt lại mật khẩu (<code>RISK-LOGIN-03</code>)</td></tr><tr><td data-label="Phần cắt">Không kiểm được trong 2 phút</td><td data-label="TC"><code>_028</code> · <code>_029</code> (chờ ≥ 2 phút, cần DevTools) · <code>_030</code> (chờ 8 giờ 5 phút)</td><td data-label="Lý do">Vượt giới hạn mục checklist. <code>_029</code> FAIL ở lần chạy 10-10-2026, chưa có bug report</td></tr><tr><td data-label="Phần cắt">Cần hơn 3 thao tác</td><td data-label="TC"><code>_034</code></td><td data-label="Lý do">Sao chép, đăng xuất, xoá cookie, gán lại cookie — giữ ở mức test case</td></tr><tr><td data-label="Phần cắt">Giữ trong ngưỡng 40 mục</td><td data-label="TC"><code>_022</code> · <code>_023</code> · <code>_038</code> · <code>_039</code> · <code>_055</code> · <code>_080</code> · <code>_084</code> · <code>_085</code></td><td data-label="Lý do">Rủi ro thấp, hoặc cùng cơ chế với mục đã có (<code>_039</code> · <code>_055</code> như mục 9)</td></tr><tr><td data-label="Phần cắt">Biến thể của TC đã gom</td><td data-label="TC"><code>_012-b</code> · <code>_013-b</code> · <code>_015-b→e</code> · <code>_016-b</code> · <code>_019-b</code> · <code>_047-b→e</code> · <code>_050-b</code> · <code>_058-b</code></td><td data-label="Lý do">Checklist rà biến thể đại diện, mục 34 chạy tiếng Anh</td></tr></tbody></table>
+        <p class="tail"><strong>REQ chưa có mục (56 / 72 REQ có mục):</strong> REQ-LOGIN-14 · 16 · 20 · 25 · 31 · 33 · 38 · 39 · 52 · 57 · 58 · 61 · 62 · 66 · 67 · 68 — đều có TC ở phần đã cắt, cần rà thì chạy bộ TC.</p>
+      </div>
+    </details>
+    <section class="sign">
+      <h2>Ký nhận</h2>
+      <div class="fields"><label><span>Môi trường</span><input type="text" data-sign="0"></label><label><span>Build / Version</span><input type="text" data-sign="1"></label><label><span>Người thực hiện</span><input type="text" data-sign="2"></label><label><span>Ngày</span><input type="text" data-sign="3"></label><label><span>Kết quả (Pass/Fail/Blocked)</span><select data-sign="4"><option value=""></option><option>Pass</option><option>Fail</option><option>Blocked</option></select></label></div>
+    </section>
+  </div>
+</main>
+<script>
+(function(){
+  var KEY='checklist-state:CL-regression_20261108';
+  var CYCLE=['none','pass','fail','blocked','skipped'];
+  var LABEL={none:'Chưa chạy',pass:'Pass',fail:'Fail',blocked:'Blocked',skipped:'Skipped'};
+  var state={status:{},signoff:{}};
+  var store=null;
+  try{
+    store=window.localStorage;
+    store.setItem(KEY+':test','1');
+    store.removeItem(KEY+':test');
+  }catch(e){store=null;}
+  if(store){
+    try{
+      var saved=JSON.parse(store.getItem(KEY));
+      if(saved){
+        Object.keys(saved.status||{}).forEach(function(n){
+          var s=saved.status[n];
+          if(s!=='none'&&LABEL.hasOwnProperty(s)){state.status[n]=s;}
+        });
+        state.signoff=saved.signoff||{};
+      }
+    }catch(e){}
+  }
+  var noSave=document.getElementById('nosave');
+  noSave.hidden=!!store;
+  function save(){
+    if(!store)return;
+    try{store.setItem(KEY,JSON.stringify(state));}catch(e){noSave.hidden=false;}
+  }
+
+  var rows=[].slice.call(document.querySelectorAll('.sheet tbody tr'));
+  var groups=[].slice.call(document.querySelectorAll('.group'));
+  var buttons=[].slice.call(document.querySelectorAll('[data-status-btn]'));
+  var signs=[].slice.call(document.querySelectorAll('[data-sign]'));
+  var filters=[].slice.call(document.querySelectorAll('[data-filter]'));
+  var resetBtn=document.getElementById('reset');
+  var filter='all';
+
+  function statusOf(tr){return state.status[tr.dataset.num]||'none';}
+  function paint(btn){
+    var n=btn.dataset.statusBtn,s=state.status[n]||'none';
+    btn.dataset.status=s;
+    btn.textContent=LABEL[s];
+    btn.setAttribute('aria-label','Mục '+n+': '+LABEL[s]+'. Bấm để chuyển trạng thái');
+    btn.closest('tr').dataset.status=s;
+  }
+  function refresh(){
+    var shown=0,counts={none:0,pass:0,fail:0,blocked:0,skipped:0};
+    rows.forEach(function(tr){
+      var match=filter==='all'||tr.dataset.prio===filter;
+      tr.hidden=!match;
+      if(match){shown++;counts[statusOf(tr)]++;}
+    });
+    groups.forEach(function(sec){
+      var id=sec.dataset.group;
+      var own=[].slice.call(sec.querySelectorAll('tbody tr')).filter(function(tr){return !tr.hidden;});
+      var ok=own.filter(function(tr){return statusOf(tr)!=='none';}).length;
+      sec.hidden=own.length===0;
+      sec.querySelector('[data-count]').textContent=ok+'/'+own.length+' mục';
+      var link=document.querySelector('[data-nav="'+id+'"]');
+      link.hidden=own.length===0;
+      link.querySelector('[data-navcount]').textContent=ok+'/'+own.length;
+    });
+    document.getElementById('done').textContent=shown-counts.none;
+    document.getElementById('all').textContent=shown;
+    CYCLE.forEach(function(s){
+      document.querySelector('[data-n="'+s+'"]').textContent=counts[s];
+      var seg=document.querySelector('[data-bar="'+s+'"]');
+      if(seg){seg.style.width=(shown?counts[s]/shown*100:0)+'%';}
+    });
+    resetBtn.disabled=Object.keys(state.status).length===0;
+  }
+
+  buttons.forEach(function(btn){
+    paint(btn);
+    btn.addEventListener('click',function(){
+      var n=btn.dataset.statusBtn,cur=state.status[n]||'none';
+      var next=CYCLE[(CYCLE.indexOf(cur)+1)%CYCLE.length];
+      if(next==='none'){delete state.status[n];}else{state.status[n]=next;}
+      save();paint(btn);refresh();
+    });
+  });
+  signs.forEach(function(el){
+    el.value=state.signoff[el.dataset.sign]||'';
+    el.addEventListener('input',function(){state.signoff[el.dataset.sign]=el.value;save();});
+  });
+  filters.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      filter=btn.dataset.filter;
+      filters.forEach(function(b){b.setAttribute('aria-pressed',String(b===btn));});
+      refresh();
+    });
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    if(!window.confirm('Xoá trạng thái đã chấm của toàn bộ '+rows.length+' mục, đưa về Chưa chạy?'))return;
+    state.status={};save();
+    buttons.forEach(paint);
+    refresh();
+  });
+  document.getElementById('print').addEventListener('click',function(){window.print();});
+  window.addEventListener('beforeprint',function(){
+    [].forEach.call(document.querySelectorAll('details'),function(d){d.open=true;});
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
