@@ -5,6 +5,7 @@
 **Nguồn:** TC-based — rút gọn từ [`TEST_CASES_LOGIN_SUMMARY.md`](../../../testcases/login/TEST_CASES_LOGIN_SUMMARY.md) (88 TC · [part 01](../../../testcases/login/web/parts/part_01_web_smoke.md) · [part 02](../../../testcases/login/web/parts/part_02_web_quan_tri.md) · [part 03](../../../testcases/login/web/parts/part_03_web_quen_mat_khau_cong.md) · [part 04](../../../testcases/login/web/parts/part_04_web_ky_thuat_phi_chuc_nang.md)) · Requirements: [`REQUIREMENTS_LOGIN_SUMMARY.md`](../../../requirements/login/REQUIREMENTS_LOGIN_SUMMARY.md)
 **Scope:** 4 màn hình xác thực (khu quản trị + cổng khách hàng), phiên đăng nhập, đăng xuất, ranh giới Staff / contact, 7 bug đang mở — lấy từ V1 + V2 + V3 `Permission` + rà lại bug cũ. Vai trò: Staff (`EMAIL_ADMIN`) · contact (`EMAIL_CUSTOMER`).
 **Ngày lập:** 08-11-2026
+**Kết quả chạy gần nhất:** Lượt 1 · `run_1794265314` · 10-11-2026 06:01 → 06:10 — 31 ✅ PASS · 9 ❌ FAIL (mục 32–40, đều là lỗi đã biết) · 0 BLOCKED · 0 SKIPPED — báo cáo: [HTML](../../../executions/login/web/run_1794265314/execution_report.html) · [MD](../../../executions/login/web/run_1794265314/execution_report.md)
 
 ### Điều kiện chung
 
@@ -20,88 +21,88 @@
 
 ### Nhóm: Giao diện & lối vào
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 1 | ☐ | Mở Login quản trị, gõ `abc123` vào ô Password | Đủ logo, tiêu đề `Login`, ô `Email Address` có con trỏ sẵn, ô `Password` chỉ hiện dấu chấm, `Remember me` chưa tích, nút `Login`, liên kết `Forgot Password?` | P2 | REQ-LOGIN-02, REQ-LOGIN-03, REQ-LOGIN-04, REQ-LOGIN-21 | CRM_LOGIN_TC_001 |
-| 2 | ☐ | Bấm `Forgot Password?` ở Login quản trị | Sang `/admin/authentication/forgot_password`: tiêu đề `Forgot Password`, ô `Email Address` trống, nút `Confirm`, không có liên kết về Login | P2 | REQ-LOGIN-15, REQ-LOGIN-32 | CRM_LOGIN_TC_002, CRM_LOGIN_TC_006 |
-| 3 | ☐ | Mở Login cổng | Tiêu đề `Please login`, `Language` hiện `English`, ô `Email Address`, `Password`, `Remember me` chưa tích, nút `Login`, liên kết `Forgot Password?`; không có `Register` | P2 | REQ-LOGIN-40, REQ-LOGIN-49 | CRM_LOGIN_TC_003 |
-| 4 | ☐ | Bấm `Forgot Password?` ở Login cổng, rồi bấm `Login` đầu trang | Trang `Forgot Password` có ô `Email Address`, nút `Submit`, tab ghi `Forgot Password?`; bấm `Login` về `Please login` | P2 | REQ-LOGIN-40, REQ-LOGIN-51 | CRM_LOGIN_TC_004, CRM_LOGIN_TC_007 |
-| 5 | ☐ | Mở `/admin/clients` khi chưa đăng nhập, rồi đăng nhập đúng | Bị đưa về `/admin/authentication`, không thấy nội dung quản trị; đăng nhập xong vào Dashboard, không phải trang Customers | P1 | REQ-LOGIN-01, REQ-LOGIN-18 | CRM_LOGIN_TC_005, CRM_LOGIN_TC_024 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | ✅ PASS | Mở Login quản trị, gõ `abc123` vào ô Password | Đủ logo, tiêu đề `Login`, ô `Email Address` có con trỏ sẵn, ô `Password` chỉ hiện dấu chấm, `Remember me` chưa tích, nút `Login`, liên kết `Forgot Password?` | P2 | REQ-LOGIN-02, REQ-LOGIN-03, REQ-LOGIN-04, REQ-LOGIN-21 | CRM_LOGIN_TC_001 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 2 | ✅ PASS | Bấm `Forgot Password?` ở Login quản trị | Sang `/admin/authentication/forgot_password`: tiêu đề `Forgot Password`, ô `Email Address` trống, nút `Confirm`, không có liên kết về Login | P2 | REQ-LOGIN-15, REQ-LOGIN-32 | CRM_LOGIN_TC_002, CRM_LOGIN_TC_006 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 3 | ✅ PASS | Mở Login cổng | Tiêu đề `Please login`, `Language` hiện `English`, ô `Email Address`, `Password`, `Remember me` chưa tích, nút `Login`, liên kết `Forgot Password?`; không có `Register` | P2 | REQ-LOGIN-40, REQ-LOGIN-49 | CRM_LOGIN_TC_003 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 4 | ✅ PASS | Bấm `Forgot Password?` ở Login cổng, rồi bấm `Login` đầu trang | Trang `Forgot Password` có ô `Email Address`, nút `Submit`, tab ghi `Forgot Password?`; bấm `Login` về `Please login` | P2 | REQ-LOGIN-40, REQ-LOGIN-51 | CRM_LOGIN_TC_004, CRM_LOGIN_TC_007 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 5 | ✅ PASS | Mở `/admin/clients` khi chưa đăng nhập, rồi đăng nhập đúng | Bị đưa về `/admin/authentication`, không thấy nội dung quản trị; đăng nhập xong vào Dashboard, không phải trang Customers | P1 | REQ-LOGIN-01, REQ-LOGIN-18 | CRM_LOGIN_TC_005, CRM_LOGIN_TC_024 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Nhóm: Đăng nhập khu quản trị
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 6 | ☐ | Đăng nhập khu quản trị bằng `EMAIL_ADMIN` / `PASSWORD_ADMIN`, không tích `Remember me` | Vào Dashboard: tab có chữ `Dashboard`, địa chỉ `/admin/`, không còn form đăng nhập | P1 | REQ-LOGIN-17 | CRM_LOGIN_TC_008 |
-| 7 | ☐ | Đăng nhập khu quản trị bằng `EMAIL_ADMIN` viết HOA, thêm 2 dấu cách hai đầu | Vào Dashboard, không báo lỗi định dạng hay sai thông tin | P2 | REQ-LOGIN-71, REQ-LOGIN-72 | CRM_LOGIN_TC_017, CRM_LOGIN_TC_018 |
-| 8 | ☐ | Bỏ trống Email và Password ở Login quản trị, bấm `Login` | Đúng 2 khung đỏ `The Password field is required.` và `The Email Address field is required.` (không chấm thứ tự); không vào Dashboard | P2 | REQ-LOGIN-05, REQ-LOGIN-06, REQ-LOGIN-07 | CRM_LOGIN_TC_012, CRM_LOGIN_TC_013, CRM_LOGIN_TC_014 |
-| 9 | ☐ | Nhập Email `auto_login_1791100002`, Password `Auto@12345` ở Login quản trị, bấm `Login` | Trình duyệt hiện bong bóng cảnh báo dưới ô Email; trang không nạp lại, không có khung đỏ, chữ ở hai ô còn nguyên | P2 | REQ-LOGIN-08 | CRM_LOGIN_TC_015 |
-| 10 | ☐ | Nhập Email `auto_login_1791100003@autotest`, Password `Auto@12345` ở Login quản trị, bấm `Login` | 1 khung đỏ `The Email Address field must contain a valid email address.`; ô Email không hiện lại chuỗi đã nhập | P2 | REQ-LOGIN-09, REQ-LOGIN-12 | CRM_LOGIN_TC_016 |
-| 11 | ☐ | Nhập Email `auto_login_1791100004@auto.test`, Password `Auto@12345` ở Login quản trị, bấm `Login`, nhấn F5 | Khung đỏ `Invalid email or password`, hai ô trống; sau F5 khung đỏ biến mất, không hỏi gửi lại biểu mẫu | P1 | REQ-LOGIN-10, REQ-LOGIN-11, REQ-LOGIN-12, REQ-LOGIN-13 | CRM_LOGIN_TC_019, CRM_LOGIN_TC_021 |
-| 12 | ☐ | Nhập `EMAIL_ADMIN`, mật khẩu sai `auto_wrong_1791100005` ở Login quản trị, bấm `Login` đúng 1 lần | Cùng khung đỏ `Invalid email or password` như mục 11, cùng địa chỉ — không phân biệt được email có tồn tại | P1 | REQ-LOGIN-10 | CRM_LOGIN_TC_020 |
-| 13 | ☐ | Bấm `Login` hai lần thật nhanh với tài khoản `EMAIL_ADMIN` đúng | Vào Dashboard; không hiện trang lỗi, không bị đòi đăng nhập lại | P2 | REQ-LOGIN-17 | CRM_LOGIN_TC_035 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 6 | ✅ PASS | Đăng nhập khu quản trị bằng `EMAIL_ADMIN` / `PASSWORD_ADMIN`, không tích `Remember me` | Vào Dashboard: tab có chữ `Dashboard`, địa chỉ `/admin/`, không còn form đăng nhập | P1 | REQ-LOGIN-17 | CRM_LOGIN_TC_008 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 7 | ✅ PASS | Đăng nhập khu quản trị bằng `EMAIL_ADMIN` viết HOA, thêm 2 dấu cách hai đầu | Vào Dashboard, không báo lỗi định dạng hay sai thông tin | P2 | REQ-LOGIN-71, REQ-LOGIN-72 | CRM_LOGIN_TC_017, CRM_LOGIN_TC_018 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 8 | ✅ PASS | Bỏ trống Email và Password ở Login quản trị, bấm `Login` | Đúng 2 khung đỏ `The Password field is required.` và `The Email Address field is required.` (không chấm thứ tự); không vào Dashboard | P2 | REQ-LOGIN-05, REQ-LOGIN-06, REQ-LOGIN-07 | CRM_LOGIN_TC_012, CRM_LOGIN_TC_013, CRM_LOGIN_TC_014 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 9 | ✅ PASS | Nhập Email `auto_login_1791100002`, Password `Auto@12345` ở Login quản trị, bấm `Login` | Trình duyệt hiện bong bóng cảnh báo dưới ô Email; trang không nạp lại, không có khung đỏ, chữ ở hai ô còn nguyên | P2 | REQ-LOGIN-08 | CRM_LOGIN_TC_015 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 10 | ✅ PASS | Nhập Email `auto_login_1791100003@autotest`, Password `Auto@12345` ở Login quản trị, bấm `Login` | 1 khung đỏ `The Email Address field must contain a valid email address.`; ô Email không hiện lại chuỗi đã nhập | P2 | REQ-LOGIN-09, REQ-LOGIN-12 | CRM_LOGIN_TC_016 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 11 | ✅ PASS | Nhập Email `auto_login_1791100004@auto.test`, Password `Auto@12345` ở Login quản trị, bấm `Login`, nhấn F5 | Khung đỏ `Invalid email or password`, hai ô trống; sau F5 khung đỏ biến mất, không hỏi gửi lại biểu mẫu | P1 | REQ-LOGIN-10, REQ-LOGIN-11, REQ-LOGIN-12, REQ-LOGIN-13 | CRM_LOGIN_TC_019, CRM_LOGIN_TC_021 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 12 | ✅ PASS | Nhập `EMAIL_ADMIN`, mật khẩu sai `auto_wrong_1791100005` ở Login quản trị, bấm `Login` đúng 1 lần | Cùng khung đỏ `Invalid email or password` như mục 11, cùng địa chỉ — không phân biệt được email có tồn tại | P1 | REQ-LOGIN-10 | CRM_LOGIN_TC_020 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 13 | ✅ PASS | Bấm `Login` hai lần thật nhanh với tài khoản `EMAIL_ADMIN` đúng | Vào Dashboard; không hiện trang lỗi, không bị đòi đăng nhập lại | P2 | REQ-LOGIN-17 | CRM_LOGIN_TC_035 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Nhóm: Phiên đăng nhập & Ghi nhớ
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 14 | ☐ | Bấm Back sau khi đăng nhập, nhấn F5, rồi mở Login quản trị | Không lần nào hiện form đăng nhập, luôn ở Dashboard `/admin/` | P1 | REQ-LOGIN-17, REQ-LOGIN-19 | CRM_LOGIN_TC_009, CRM_LOGIN_TC_036 |
-| 15 | ☐ | Đăng nhập không tích `Remember me`, xoá cookie `sp_session`, mở `/admin/` 🔧 | Bị đưa về trang Login quản trị, không tự đăng nhập lại | P1 | REQ-LOGIN-22 | CRM_LOGIN_TC_025 |
-| 16 | ☐ | Đăng nhập có tích `Remember me`, xoá mọi cookie trừ `autologin`, mở `/admin/` 🔧 | Vào thẳng Dashboard, không đi qua trang Login | P1 | REQ-LOGIN-23, REQ-LOGIN-24 | CRM_LOGIN_TC_026, CRM_LOGIN_TC_027 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 14 | ✅ PASS | Bấm Back sau khi đăng nhập, nhấn F5, rồi mở Login quản trị | Không lần nào hiện form đăng nhập, luôn ở Dashboard `/admin/` | P1 | REQ-LOGIN-17, REQ-LOGIN-19 | CRM_LOGIN_TC_009, CRM_LOGIN_TC_036 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 15 | ✅ PASS | Đăng nhập không tích `Remember me`, xoá cookie `sp_session`, mở `/admin/` 🔧 | Bị đưa về trang Login quản trị, không tự đăng nhập lại | P1 | REQ-LOGIN-22 | CRM_LOGIN_TC_025 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 16 | ✅ PASS | Đăng nhập có tích `Remember me`, xoá mọi cookie trừ `autologin`, mở `/admin/` 🔧 | Vào thẳng Dashboard, không đi qua trang Login | P1 | REQ-LOGIN-23, REQ-LOGIN-24 | CRM_LOGIN_TC_026, CRM_LOGIN_TC_027 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Nhóm: Đăng xuất
 
 > **Điều kiện nhóm:** đã đăng nhập khu quản trị bằng `EMAIL_ADMIN`, thanh đầu trang không có bộ đếm giờ đang chạy.
 > **Riêng mục 21:** trước khi chạy, tạo task `auto_login_timer_1791100008` ở menu `Tasks`, bấm `Start Timer`. Sau khi chạy: đăng nhập lại, dừng bộ đếm, xoá đúng task đó.
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 17 | ☐ | Bấm ảnh đại diện, bấm `Logout`, rồi mở `/admin/` | Menu đúng 5 mục `My Profile` · `My Timesheets` · `Edit Profile` · `Language` · `Logout`; về `/admin/authentication`; mở lại vẫn về Login | P1 | REQ-LOGIN-26, REQ-LOGIN-27 | CRM_LOGIN_TC_010 |
-| 18 | ☐ | Bấm nút Back của trình duyệt ngay sau khi `Logout` | Không thấy lại Dashboard hay dữ liệu quản trị; hiện trang Login, địa chỉ `/admin/authentication` | P1 | REQ-LOGIN-27, REQ-LOGIN-30 | CRM_LOGIN_TC_033 |
-| 19 | ☐ | Mở tab hai trang `Customers`, `Logout` ở tab một, bấm `Dashboard` ở tab hai | Tab hai bị đưa về trang Login quản trị, không hiện Dashboard | P2 | REQ-LOGIN-01, REQ-LOGIN-27 | CRM_LOGIN_TC_037 |
-| 20 | ☐ | Sao chép `sp_session`, bấm `Logout`, gán lại giá trị cũ, mở `/admin/` 🔧 | Vẫn ở trang Login quản trị — phiên cũ không dùng lại được | P1 | REQ-LOGIN-27, REQ-LOGIN-29 | CRM_LOGIN_TC_032 |
-| 21 | ☐ | Bấm `Logout` khi bộ đếm giờ đang chạy, rồi chọn `Logout` trong popup | Chưa đăng xuất, hiện popup `Started tasks timers found!` `Are you sure you want to logout without stopping the timers?`; chọn `Logout` thì về trang Login | P2 | REQ-LOGIN-28 | CRM_LOGIN_TC_031 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 17 | ✅ PASS | Bấm ảnh đại diện, bấm `Logout`, rồi mở `/admin/` | Menu đúng 5 mục `My Profile` · `My Timesheets` · `Edit Profile` · `Language` · `Logout`; về `/admin/authentication`; mở lại vẫn về Login | P1 | REQ-LOGIN-26, REQ-LOGIN-27 | CRM_LOGIN_TC_010 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 18 | ✅ PASS | Bấm nút Back của trình duyệt ngay sau khi `Logout` | Không thấy lại Dashboard hay dữ liệu quản trị; hiện trang Login, địa chỉ `/admin/authentication` | P1 | REQ-LOGIN-27, REQ-LOGIN-30 | CRM_LOGIN_TC_033 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 19 | ✅ PASS | Mở tab hai trang `Customers`, `Logout` ở tab một, bấm `Dashboard` ở tab hai | Tab hai bị đưa về trang Login quản trị, không hiện Dashboard | P2 | REQ-LOGIN-01, REQ-LOGIN-27 | CRM_LOGIN_TC_037 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 20 | ✅ PASS | Sao chép `sp_session`, bấm `Logout`, gán lại giá trị cũ, mở `/admin/` 🔧 | Vẫn ở trang Login quản trị — phiên cũ không dùng lại được | P1 | REQ-LOGIN-27, REQ-LOGIN-29 | CRM_LOGIN_TC_032 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 21 | ✅ PASS | Bấm `Logout` khi bộ đếm giờ đang chạy, rồi chọn `Logout` trong popup | Chưa đăng xuất, hiện popup `Started tasks timers found!` `Are you sure you want to logout without stopping the timers?`; chọn `Logout` thì về trang Login | P2 | REQ-LOGIN-28 | CRM_LOGIN_TC_031 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Nhóm: Quên mật khẩu
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 22 | ☐ | Nhập `auto_login_1791100010@autotest` ở Quên mật khẩu quản trị, bấm `Confirm` | Khung đỏ `The Email Address field must contain a valid email address.`; ô Email giữ nguyên chuỗi đã nhập | P2 | REQ-LOGIN-35, REQ-LOGIN-37 | CRM_LOGIN_TC_041 |
-| 23 | ☐ | Nhập `auto_login_1791100017@autotest` ở Quên mật khẩu cổng, bấm `Submit` | Khung đỏ `The Email Address field must contain a valid email address.`; ô Email giữ nguyên chuỗi đã nhập | P2 | REQ-LOGIN-54, REQ-LOGIN-56 | CRM_LOGIN_TC_057 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 22 | ✅ PASS | Nhập `auto_login_1791100010@autotest` ở Quên mật khẩu quản trị, bấm `Confirm` | Khung đỏ `The Email Address field must contain a valid email address.`; ô Email giữ nguyên chuỗi đã nhập | P2 | REQ-LOGIN-35, REQ-LOGIN-37 | CRM_LOGIN_TC_041 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 23 | ✅ PASS | Nhập `auto_login_1791100017@autotest` ở Quên mật khẩu cổng, bấm `Submit` | Khung đỏ `The Email Address field must contain a valid email address.`; ô Email giữ nguyên chuỗi đã nhập | P2 | REQ-LOGIN-54, REQ-LOGIN-56 | CRM_LOGIN_TC_057 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Nhóm: Đăng nhập cổng khách hàng
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 24 | ☐ | Đăng nhập Login cổng bằng `EMAIL_CUSTOMER` / `PASSWORD_CUSTOMER` | Rời trang Login, về trang chủ cổng có menu `Projects` · `Invoices`; không còn form `Please login`, không có thông báo lỗi | P1 | REQ-LOGIN-50 | CRM_LOGIN_TC_011 |
-| 25 | ☐ | Bỏ trống Email và Password ở Login cổng, bấm `Login` | Chữ đỏ ngay dưới từng ô: `The Email Address field is required.` · `The Password field is required.` | P2 | REQ-LOGIN-42, REQ-LOGIN-43 | CRM_LOGIN_TC_048, CRM_LOGIN_TC_049 |
-| 26 | ☐ | Nhập Email `auto_login_1791100013`, Password `Auto@12345` ở Login cổng, bấm `Login` | Trình duyệt không chặn, trang nạp lại; dưới ô Email hiện chữ đỏ `The Email Address field must contain a valid email address.`, ô Email trống | P2 | REQ-LOGIN-41, REQ-LOGIN-45 | CRM_LOGIN_TC_047 |
-| 27 | ☐ | Nhập Email `auto_login_1791100015@auto.test`, Password `Auto@12345` ở Login cổng, bấm `Login` | Góc trên phải hiện thông báo nổi `Invalid username or password`, tự ẩn sau khoảng 3,5 giây; ô Email trống, vẫn ở `Please login` | P1 | REQ-LOGIN-44, REQ-LOGIN-45 | CRM_LOGIN_TC_050 |
-| 28 | ☐ | Chọn `Language` = `Vietnamese` ở Login cổng, mở lại trang, rồi mở Login quản trị | Cổng hiện `Xin hãy đăng nhập` · `Địa chỉ email` · `Mật khẩu`, mở lại vẫn tiếng Việt; Login quản trị vẫn tiếng Anh | P2 | REQ-LOGIN-46, REQ-LOGIN-47, REQ-LOGIN-48 | CRM_LOGIN_TC_051, CRM_LOGIN_TC_052, CRM_LOGIN_TC_053 |
-| 29 | ☐ | Mở `/authentication/register` khi chưa đăng nhập | Không hiện form đăng ký; tự về `Please login`, địa chỉ chứa `/authentication/login` | P2 | REQ-LOGIN-49 | CRM_LOGIN_TC_054 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 24 | ✅ PASS | Đăng nhập Login cổng bằng `EMAIL_CUSTOMER` / `PASSWORD_CUSTOMER` | Rời trang Login, về trang chủ cổng có menu `Projects` · `Invoices`; không còn form `Please login`, không có thông báo lỗi | P1 | REQ-LOGIN-50 | CRM_LOGIN_TC_011 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 25 | ✅ PASS | Bỏ trống Email và Password ở Login cổng, bấm `Login` | Chữ đỏ ngay dưới từng ô: `The Email Address field is required.` · `The Password field is required.` | P2 | REQ-LOGIN-42, REQ-LOGIN-43 | CRM_LOGIN_TC_048, CRM_LOGIN_TC_049 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 26 | ✅ PASS | Nhập Email `auto_login_1791100013`, Password `Auto@12345` ở Login cổng, bấm `Login` | Trình duyệt không chặn, trang nạp lại; dưới ô Email hiện chữ đỏ `The Email Address field must contain a valid email address.`, ô Email trống | P2 | REQ-LOGIN-41, REQ-LOGIN-45 | CRM_LOGIN_TC_047 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 27 | ✅ PASS | Nhập Email `auto_login_1791100015@auto.test`, Password `Auto@12345` ở Login cổng, bấm `Login` | Góc trên phải hiện thông báo nổi `Invalid username or password`, tự ẩn sau khoảng 3,5 giây; ô Email trống, vẫn ở `Please login` | P1 | REQ-LOGIN-44, REQ-LOGIN-45 | CRM_LOGIN_TC_050 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 28 | ✅ PASS | Chọn `Language` = `Vietnamese` ở Login cổng, mở lại trang, rồi mở Login quản trị | Cổng hiện `Xin hãy đăng nhập` · `Địa chỉ email` · `Mật khẩu`, mở lại vẫn tiếng Việt; Login quản trị vẫn tiếng Anh | P2 | REQ-LOGIN-46, REQ-LOGIN-47, REQ-LOGIN-48 | CRM_LOGIN_TC_051, CRM_LOGIN_TC_052, CRM_LOGIN_TC_053 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 29 | ✅ PASS | Mở `/authentication/register` khi chưa đăng nhập | Không hiện form đăng ký; tự về `Please login`, địa chỉ chứa `/authentication/login` | P2 | REQ-LOGIN-49 | CRM_LOGIN_TC_054 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Nhóm: Phân quyền hai khu xác thực
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 30 | ☐ | Đăng nhập Login cổng bằng `EMAIL_ADMIN` / `PASSWORD_ADMIN` (Staff) | Thông báo nổi `Invalid username or password`; vẫn ở `Please login`, không vào khu khách hàng | P1 | REQ-LOGIN-60 | CRM_LOGIN_TC_061 |
-| 31 | ☐ | Đăng nhập Login quản trị bằng `EMAIL_CUSTOMER` / `PASSWORD_CUSTOMER` (contact), rồi mở `/admin/` | Không vào Dashboard, ở lại trang Login kèm khung đỏ báo lỗi; mở `/admin/` vẫn về Login | P1 | REQ-LOGIN-59 | CRM_LOGIN_TC_062 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 30 | ✅ PASS | Đăng nhập Login cổng bằng `EMAIL_ADMIN` / `PASSWORD_ADMIN` (Staff) | Thông báo nổi `Invalid username or password`; vẫn ở `Please login`, không vào khu khách hàng | P1 | REQ-LOGIN-60 | CRM_LOGIN_TC_061 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 31 | ✅ PASS | Đăng nhập Login quản trị bằng `EMAIL_CUSTOMER` / `PASSWORD_CUSTOMER` (contact), rồi mở `/admin/` | Không vào Dashboard, ở lại trang Login kèm khung đỏ báo lỗi; mở `/admin/` vẫn về Login | P1 | REQ-LOGIN-59 | CRM_LOGIN_TC_062 | — | — | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Nhóm: Rà lại bug đang mở
 
 > Cả 9 mục FAIL ở lần chạy 10-10-2026 và ứng với 7 bug còn mở ([danh mục bug](../../../bugs/README.md)). Vẫn FAIL → ghi **FAIL — lỗi đã biết**, không mở bug mới, **không** hạ kỳ vọng (`RISK-LOGIN-07`). PASS → chạy `/retest-fixed-bugs` để đóng bug.
 
-| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan |
-|---|---|---|---|---|---|---|
-| 32 | ☐ | So giá trị `sp_session` trước và sau khi đăng nhập quản trị 🔧 | Hai giá trị khác nhau — đăng nhập cấp mã phiên mới (so trong công cụ, không chép ra báo cáo) | P1 | REQ-LOGIN-65 | CRM_LOGIN_TC_070 |
-| 33 | ☐ | Nhập `auto_login_1791100011@auto.test` ở Quên mật khẩu quản trị, bấm `Confirm` | Thông báo chứa `If this email address exists in our system, we have sent password reset instructions.`; không có `Email not found` | P2 | REQ-LOGIN-36 | CRM_LOGIN_TC_042 |
-| 34 | ☐ | Nhập `auto_login_1791100018@auto.test` ở Quên mật khẩu cổng, bấm `Submit` | Thông báo chứa `If this email address exists in our system, we have sent password reset instructions.`; không có `Email not found` | P2 | REQ-LOGIN-55 | CRM_LOGIN_TC_058 |
-| 35 | ☐ | Đăng nhập có tích `Remember me`, xem cờ `HttpOnly` của cookie `autologin` 🔧 | Cookie `autologin` có `HttpOnly` bật — script trên trang không đọc được | P2 | REQ-LOGIN-63 | CRM_LOGIN_TC_071 |
-| 36 | ☐ | Bỏ trống Email ở Quên mật khẩu quản trị, bấm `Confirm` | Khung đỏ `The Email Address field is required.`; không có `Email not found` | P2 | REQ-LOGIN-34 | CRM_LOGIN_TC_040 |
-| 37 | ☐ | Bỏ trống Email ở Quên mật khẩu cổng, bấm `Submit` | Khung đỏ `The Email Address field is required.`; không có `Email not found` | P2 | REQ-LOGIN-53 | CRM_LOGIN_TC_056 |
-| 38 | ☐ | Mở `/admin/authentication/reset_password` không kèm tham số | Hiện trang báo không tìm thấy (Not Found), không phải trang lỗi máy chủ | P3 | REQ-LOGIN-64 | CRM_LOGIN_TC_045 |
-| 39 | ☐ | Đọc tiêu đề tab trang Quên mật khẩu quản trị | Đúng nguyên văn `Forgot Password?`, không chứa chữ `Login` | P3 | REQ-LOGIN-69 | CRM_LOGIN_TC_046 |
-| 40 | ☐ | Mở Login quản trị, xem tab Console của DevTools 🔧 | Không có cảnh báo của Chrome về ô nhập thiếu thuộc tính tự điền (`autocomplete`) | P3 | REQ-LOGIN-70 | CRM_LOGIN_TC_076 |
+| # | Trạng thái | Hạng mục kiểm tra | Kết quả kỳ vọng | Priority | REQ ID | TC ID liên quan | Mô tả lỗi (Fail / Block) | Evidence | Lượt chạy · Thời gian chạy |
+|---|---|---|---|---|---|---|---|---|---|
+| 32 | ❌ FAIL | So giá trị `sp_session` trước và sau khi đăng nhập quản trị 🔧 | Hai giá trị khác nhau — đăng nhập cấp mã phiên mới (so trong công cụ, không chép ra báo cáo) | P1 | REQ-LOGIN-65 | CRM_LOGIN_TC_070 | Giá trị `sp_session` trước và sau khi đăng nhập **giống nhau** → hệ thống không cấp mã phiên mới (session fixation). Bug: [BUG_login_1791897544_TC070](../../../bugs/login/web/BUG_login_1791897544_TC070.md) | ![Evidence mục 32](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-32_sp_session_truoc_sau_dang_nhap.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 33 | ❌ FAIL | Nhập `auto_login_1791100011@auto.test` ở Quên mật khẩu quản trị, bấm `Confirm` | Thông báo chứa `If this email address exists in our system, we have sent password reset instructions.`; không có `Email not found` | P2 | REQ-LOGIN-36 | CRM_LOGIN_TC_042 | Hiện khung đỏ `Email not found` thay vì thông báo chung `If this email address exists…` → lộ việc email có / không có tài khoản. Bug: [BUG_login_1791897545_TC042](../../../bugs/login/web/BUG_login_1791897545_TC042.md) | ![Evidence mục 33](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-33_quen_mk_admin.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 34 | ❌ FAIL | Nhập `auto_login_1791100018@auto.test` ở Quên mật khẩu cổng, bấm `Submit` | Thông báo chứa `If this email address exists in our system, we have sent password reset instructions.`; không có `Email not found` | P2 | REQ-LOGIN-55 | CRM_LOGIN_TC_058 | Hiện khung đỏ `Email not found` thay vì thông báo chung `If this email address exists…` → lộ việc email có / không có tài khoản. Bug: [BUG_login_1791897545_TC042](../../../bugs/login/web/BUG_login_1791897545_TC042.md) | ![Evidence mục 34](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-34_quen_mk_cong.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 35 | ❌ FAIL | Đăng nhập có tích `Remember me`, xem cờ `HttpOnly` của cookie `autologin` 🔧 | Cookie `autologin` có `HttpOnly` bật — script trên trang không đọc được | P2 | REQ-LOGIN-63 | CRM_LOGIN_TC_071 | Cookie `autologin` có `HttpOnly` **tắt**; `document.cookie` trên trang đọc được cookie này. Bug: [BUG_login_1791897547_TC071](../../../bugs/login/web/BUG_login_1791897547_TC071.md) | ![Evidence mục 35](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-35_autologin_httponly_tat.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 36 | ❌ FAIL | Bỏ trống Email ở Quên mật khẩu quản trị, bấm `Confirm` | Khung đỏ `The Email Address field is required.`; không có `Email not found` | P2 | REQ-LOGIN-34 | CRM_LOGIN_TC_040 | Bỏ trống Email vẫn hiện `Email not found`, không có `The Email Address field is required.` Bug: [BUG_login_1791897546_TC040](../../../bugs/login/web/BUG_login_1791897546_TC040.md) | ![Evidence mục 36](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-36_bo_trong_admin.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 37 | ❌ FAIL | Bỏ trống Email ở Quên mật khẩu cổng, bấm `Submit` | Khung đỏ `The Email Address field is required.`; không có `Email not found` | P2 | REQ-LOGIN-53 | CRM_LOGIN_TC_056 | Bỏ trống Email vẫn hiện `Email not found`, không có `The Email Address field is required.` Bug: [BUG_login_1791897546_TC040](../../../bugs/login/web/BUG_login_1791897546_TC040.md) | ![Evidence mục 37](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-37_bo_trong_cong.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 38 | ❌ FAIL | Mở `/admin/authentication/reset_password` không kèm tham số | Hiện trang báo không tìm thấy (Not Found), không phải trang lỗi máy chủ | P3 | REQ-LOGIN-64 | CRM_LOGIN_TC_045 | Máy chủ trả **HTTP 500** (thân rỗng) thay vì trang Not Found. Bug: [BUG_login_1791897548_TC045](../../../bugs/login/web/BUG_login_1791897548_TC045.md) | ![Evidence mục 38](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-38_reset_khong_tham_so_500.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 39 | ❌ FAIL | Đọc tiêu đề tab trang Quên mật khẩu quản trị | Đúng nguyên văn `Forgot Password?`, không chứa chữ `Login` | P3 | REQ-LOGIN-69 | CRM_LOGIN_TC_046 | Tiêu đề tab là `Perfex CRM \| Anh Tester Demo - Login` — chứa chữ `Login`, không phải `Forgot Password?`. Bug: [BUG_login_1791897549_TC046](../../../bugs/login/web/BUG_login_1791897549_TC046.md) | ![Evidence mục 39](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-39_tieu_de_tab_quen_mat_khau_admin.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
+| 40 | ❌ FAIL | Mở Login quản trị, xem tab Console của DevTools 🔧 | Không có cảnh báo của Chrome về ô nhập thiếu thuộc tính tự điền (`autocomplete`) | P3 | REQ-LOGIN-70 | CRM_LOGIN_TC_076 | Console có cảnh báo `Input elements should have autocomplete attributes`; ô Email và Password thiếu thuộc tính `autocomplete`. Bug: [BUG_login_1791897550_TC076](../../../bugs/login/web/BUG_login_1791897550_TC076.md) | ![Evidence mục 40](../../../executions/login/web/run_1794265314/evidence/CL-regression_20261108-40_console_thieu_autocomplete.png) | Lượt 1 · `run_1794265314`<br>10-11-2026 06:01 → 06:10 |
 
 ### Không áp dụng cho module này
 
